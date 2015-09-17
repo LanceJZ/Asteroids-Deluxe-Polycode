@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{491CED63-CB38-4F3C-AEE9-B8BC1297CA9B}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Asteroids</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>AsteroidsDeluxe</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\PolycodeView;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include\freetype2;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include\AL;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include\bullet;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include\Box2D</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Polycore_d.lib;Polycode3DPhysics_d.lib;BulletDynamics_d.lib;BulletCollision_d.lib;LinearMath_d.lib;winmm.lib;ws2_32.lib;opengl32.lib;glu32.lib;zlibd.lib;freetype_d.lib;liboggd.lib;libvorbisd.lib;libvorbisfiled.lib;OpenAL32d.lib;kernel32.lib;physfsd.lib;libpng15_staticd.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\PolycodeView;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include\freetype2;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include\AL;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include\bullet;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include\Box2D</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Polycode3DPhysics.lib;BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;winmm.lib;ws2_32.lib;opengl32.lib;glu32.lib;Polycore.lib;zlib.lib;freetype.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;OpenAL32.lib;kernel32.lib;physfs.lib;libpng15_static.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\lib</AdditionalLibraryDirectories>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Asteroids.cpp" />
+    <ClCompile Include="Clear.cpp" />
+    <ClCompile Include="Dot.cpp" />
+    <ClCompile Include="EnemyShip.cpp" />
+    <ClCompile Include="EnemyController.cpp" />
+    <ClCompile Include="EnemyPair.cpp" />
+    <ClCompile Include="EnemyPod.cpp" />
+    <ClCompile Include="Explosion.cpp" />
+    <ClCompile Include="HUD.cpp" />
+    <ClCompile Include="Location.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Random.cpp" />
+    <ClCompile Include="Rock.cpp" />
+    <ClCompile Include="RockControl.cpp" />
+    <ClCompile Include="Shot.cpp" />
+    <ClCompile Include="UFO.cpp" />
+    <ClCompile Include="UFOControl.cpp" />
+    <ClCompile Include="WinMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Asteroids.h" />
+    <ClInclude Include="Clear.h" />
+    <ClInclude Include="Dot.h" />
+    <ClInclude Include="EnemyShip.h" />
+    <ClInclude Include="EnemyController.h" />
+    <ClInclude Include="EnemyPair.h" />
+    <ClInclude Include="EnemyPod.h" />
+    <ClInclude Include="Explosion.h" />
+    <ClInclude Include="HUD.h" />
+    <ClInclude Include="Location.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Random.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
+    <ClInclude Include="resource2.h" />
+    <ClInclude Include="resource3.h" />
+    <ClInclude Include="Rock.h" />
+    <ClInclude Include="RockControl.h" />
+    <ClInclude Include="Score.h" />
+    <ClInclude Include="Shot.h" />
+    <ClInclude Include="UFO.h" />
+    <ClInclude Include="UFOControl.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
