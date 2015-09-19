@@ -21,13 +21,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
@@ -106,6 +106,7 @@
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerChase.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Rock.cpp" />
     <ClCompile Include="RockControl.cpp" />
@@ -126,6 +127,7 @@
     <ClInclude Include="HUD.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerChase.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />

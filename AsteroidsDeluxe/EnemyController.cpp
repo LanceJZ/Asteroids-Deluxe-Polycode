@@ -2,8 +2,9 @@
 
 EnemyController::EnemyController() : Timer(false, 10000)
 {
-	//p_Pod = std::unique_ptr<EnemyPod>(new EnemyPod());
+	p_Pod = std::unique_ptr<EnemyPod>(new EnemyPod());
 	p_Ship = std::unique_ptr<EnemyShip>(new EnemyShip());
+	p_Pair = std::unique_ptr<EnemyPair>(new EnemyPair());
 }
 
 void EnemyController::ResetTimer(void)
@@ -28,15 +29,21 @@ void EnemyController::Setup(std::shared_ptr<CollisionScene> scene, std::shared_p
 
 	ResetTimer();
 
-	//p_Pod->Setup(scene, player);
-	p_Ship->Setup(scene, player, ufo);
-
+	p_Ship->Setup(scene);
+	p_Ship->Setup(player, ufo);
+	p_Ship->Spawn(Vector3(-30, -20, 0), 0);
+	p_Pair->Setup(scene);
+	p_Pair->Setup(player, ufo);
+	p_Pair->Spawn(Vector3(-30, 20, 0), 0);
+	p_Pod->Setup(scene);
+	p_Pod->Spawn(Vector3(-30, 0, 0));
 }
 
 void EnemyController::Update(Number * elapsed)
 {
-	//p_Pod->Update(elapsed);
+	p_Pod->Update(elapsed);
 	p_Ship->Update(elapsed);
+	p_Pair->Update(elapsed);
 }
 
 void EnemyController::WaveNumber(int Wave)

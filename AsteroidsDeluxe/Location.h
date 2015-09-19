@@ -25,8 +25,6 @@ public:
 	Rotate m_Rotation; //In Degrees
 
 protected:
-	//const double Pi = 3.1415926535897932384626433832795;
-
 	int m_WindowHeight;
 	int m_WindowWidth;
 

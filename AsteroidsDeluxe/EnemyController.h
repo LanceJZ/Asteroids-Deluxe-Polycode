@@ -1,5 +1,5 @@
 #pragma once
-#include "EnemyShip.h"
+#include "EnemyPod.h"
 
 class EnemyController : public Timer
 {
@@ -29,8 +29,8 @@ private:
 	std::shared_ptr<CollisionScene> p_Scene;
 	std::shared_ptr<Player> p_Player;
 	std::shared_ptr<UFOControl> p_UFO;
-	//std::unique_ptr<EnemyPod> p_Pod;
-	//std::unique_ptr<EnemyPair> p_Pair;
+	std::unique_ptr<EnemyPod> p_Pod;
+	std::unique_ptr<EnemyPair> p_Pair;
 	std::unique_ptr<EnemyShip> p_Ship;
 
 	int m_Wave;
