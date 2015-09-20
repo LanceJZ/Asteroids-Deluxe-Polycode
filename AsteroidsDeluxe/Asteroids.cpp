@@ -16,7 +16,7 @@ Asteroids::Asteroids(PolycodeView *view) : EventHandler()
 	m_FiredShot = false;
 	m_Hyper = false;
 	//  Core::resizeTo 	(int xRes, int yRes);	
-	p_Scene->clearColor = Color(0.09, 0.06, 0.205, 1.0);
+	p_Scene->clearColor = Color(0.06, 0.02, 0.1, 0.05);
 	p_Scene->useClearColor = true;
 
 	p_Scene->getDefaultCamera()->setPosition(0, 0, -80);
@@ -28,7 +28,7 @@ Asteroids::Asteroids(PolycodeView *view) : EventHandler()
 	p_Player->Setup(p_Scene);
 	p_UFOs->Setup(p_Scene, p_Player);
 	p_Enemy->Setup(p_Scene, p_Player, p_UFOs);
-	p_Rocks->Setup(p_Scene, p_Player, p_UFOs);
+	p_Rocks->Setup(p_Scene, p_Player, p_UFOs, p_Enemy);
 }
 
 Asteroids::~Asteroids()
@@ -90,12 +90,13 @@ void Asteroids::handleEvent(Event *event)
 
 void Asteroids::handlePlayerInput(void)
 {
+	//Main keys.
 	bool key_up = pCore->getInput()->getKeyState(KEY_UP);
 	bool key_left = pCore->getInput()->getKeyState(KEY_LEFT);
 	bool key_right = pCore->getInput()->getKeyState(KEY_RIGHT);
 	bool key_lctrl = pCore->getInput()->getKeyState(KEY_LCTRL);
-	bool key_rctrl = pCore->getInput()->getKeyState(KEY_RCTRL);
-
+	bool key_lalt = pCore->getInput()->getKeyState(KEY_LALT);
+	//Alternative keys.
 	bool key_w = pCore->getInput()->getKeyState(KEY_w);
 	bool key_a = pCore->getInput()->getKeyState(KEY_a);
 	bool key_d = pCore->getInput()->getKeyState(KEY_d);
@@ -111,7 +112,7 @@ void Asteroids::handlePlayerInput(void)
 		p_Player->ThrustOff();
 	}
 
-	if (key_lshift)
+	if (key_lshift || key_lalt)
 	{
 		p_Player->ShieldOn();
 	}
@@ -144,19 +145,6 @@ void Asteroids::handlePlayerInput(void)
 	else
 	{
 		m_FiredShot = false;
-	}
-
-	if (key_rctrl)
-	{
-		if (!m_Hyper)
-		{
-			p_Player->Hyperspace();
-			m_Hyper = true;
-		}
-		else
-		{
-			m_Hyper = false;
-		}
 	}
 }
 

@@ -15,6 +15,7 @@ public:
 	void Spawn(Vector3 position, float rotation);
 	void SetRotationPosition(void);
 	void Pause(bool paused);
+	void NewWave(bool activated);
 	void Deactivate(void);
 	bool PlayerNotClear(void);
 
@@ -29,8 +30,8 @@ private:
 	std::shared_ptr<Player> p_Player;
 	std::shared_ptr<UFOControl> p_UFO;
 
-	bool m_FromRight;
 	bool m_ShieldHit;
+	bool m_NewWave;
 	float m_Speed;
 	int m_Points;
 

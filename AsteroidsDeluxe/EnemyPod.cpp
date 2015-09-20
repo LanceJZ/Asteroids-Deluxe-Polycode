@@ -31,17 +31,30 @@ void EnemyPod::Update(Number * elapsed)
 {
 	Location::Update(elapsed);
 
-	CheckForEdge();
 	SetPosition();
+
+	if (m_NewWave)
+	{
+		if (m_Position.x > m_WindowWidth || m_Position.x < -m_WindowWidth
+			|| m_Position.y > m_WindowHeight || m_Position.y < -m_WindowHeight)
+			Deactivate();
+	}
+	else
+		CheckForEdge();
 }
 
 void EnemyPod::Pause(bool paused)
 {
 }
 
-void EnemyPod::Spawn(Vector3 position)
+void EnemyPod::NewWave(bool activated)
 {
-	m_Position = position;
+	m_NewWave = activated;
+}
+
+void EnemyPod::Spawn()
+{
+	m_Position = Vector3(m_WindowWidth, Random::Number(0, m_WindowHeight) - Random::Number(0, m_WindowHeight), 0);
 	SetPosition();
 	Enable();
 
@@ -60,6 +73,7 @@ void EnemyPod::Enable(void)
 {
 	m_Active = true;
 	m_ShieldHit = false;
+	m_NewWave = false;
 }
 
 void EnemyPod::SetPosition(void)
@@ -77,6 +91,9 @@ void EnemyPod::Deactivate(void)
 	m_Active = false;
 	m_Hit = false;
 	m_Done = false;
+
+	for (int i = 0; i < 3; i++)
+		p_Pairs[i]->Deactivate();
 }
 
 bool EnemyPod::PlayerNotClear(void)

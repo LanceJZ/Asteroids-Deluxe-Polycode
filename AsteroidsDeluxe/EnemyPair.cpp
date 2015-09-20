@@ -34,21 +34,25 @@ void EnemyPair::Update(Number * elapsed)
 {
 	Location::Update(elapsed);
 
-	if (!m_InPod)
-	{
-		if (p_Player->m_Active)
-			m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
+	if (p_Player->m_Active)
+		m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
 
-		float rad = (m_Rotation.Amount) * TORADIANS;
+	float rad = (m_Rotation.Amount) * TORADIANS;
 		
-		m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
+	m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
 
-		SetRotationPosition();
+	SetRotationPosition();
 
-		CheckForEdge();
+	CheckPlayerHit();
 
-		CheckPlayerHit();
+	if (m_NewWave)
+	{
+		if (m_Position.x > m_WindowWidth || m_Position.x < -m_WindowWidth
+			|| m_Position.y > m_WindowHeight || m_Position.y < -m_WindowHeight)
+			Deactivate();
 	}
+	else
+		CheckForEdge();
 }
 
 void EnemyPair::Spawn(Vector3 position, float rotation)
@@ -63,10 +67,15 @@ void EnemyPair::Pause(bool paused)
 {
 }
 
+void EnemyPair::NewWave(bool activated)
+{
+	m_NewWave = activated;
+}
+
 void EnemyPair::Deactivate(void)
 {
 	for (int i = 0; i < 2; i++)
-		p_Ships[i]->m_ShipMesh->enabled = false;
+		p_Ships[i]->Deactivate();
 
 	m_Active = false;
 	m_Hit = false;
@@ -88,6 +97,7 @@ void EnemyPair::Enable(void)
 
 	m_Active = true;
 	m_ShieldHit = false;
+	m_NewWave = false;
 }
 
 void EnemyPair::SetRotationPosition(void)

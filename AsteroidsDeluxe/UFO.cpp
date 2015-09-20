@@ -30,7 +30,7 @@ void UFO::Setup(std::shared_ptr<CollisionScene> scene, std::shared_ptr<Player> p
 	m_ShipMesh->getMesh()->addVertex(-0.8, -1.1, 0.0);
 	m_ShipMesh->getMesh()->addVertex(0.8, -1.1, 0.0);
 	m_ShipMesh->cacheToVertexBuffer(true);
-	m_ShipMesh->setColor(0.7, 0.7, 0.9, 0.9);
+	m_ShipMesh->setColor(0.7, 0.7, 0.9, 1.0);
 	m_ShipMesh->lineSmooth = true;
 
 	SceneMesh *m_ShipInsideMesh = new SceneMesh(Mesh::LINE_MESH);
@@ -40,7 +40,7 @@ void UFO::Setup(std::shared_ptr<CollisionScene> scene, std::shared_ptr<Player> p
 	m_ShipInsideMesh->getMesh()->addVertex(1.9, -0.4, 0.0); // Bottom inside line
 	m_ShipInsideMesh->getMesh()->addVertex(-1.9, -0.4, 0.0);
 	m_ShipInsideMesh->cacheToVertexBuffer(true);
-	m_ShipInsideMesh->setColor(0.7, 0.7, 0.9, 0.9);
+	m_ShipInsideMesh->setColor(0.7, 0.7, 0.9, 1.0);
 	m_ShipInsideMesh->lineSmooth = true;
 
 	p_Shot->Setup(scene);
@@ -136,26 +136,7 @@ void UFO::Update(Number * elapsed)
 
 	if (p_FireTimer->getElapsedf() > m_FireTimerAmount)
 	{
-		if (!p_Shot->m_Active)
-		{
-			if (m_AimedShot && p_Player->m_Active)
-			{
-				float var = Random::Number(0, 10);
-
-				if (var < 7.5)
-				{
-					FireAimedShot();
-				}
-				else
-				{
-					FireRandomShot();
-				}
-			}
-			else
-			{
-				FireRandomShot();
-			}
-		}
+		FireShot();
 	}
 
 	if (p_VectorTimer->getElapsedf() > m_VectorTimerAmount)
@@ -206,6 +187,8 @@ void UFO::Spawn(int size)
 {
 	m_Size = size;
 	m_Hit = false;
+	m_NumberOfShotsAtRocks = 0;
+
 	float var = Random::Number(0, 10);
 
 	if (var > 5)
@@ -225,11 +208,11 @@ void UFO::Spawn(int size)
 
 	if (m_Size == 0)
 	{
-		m_AimedShot = false;
 		m_Points = 200;
 		m_ShipMesh->setScale(Vector3(1, 1, 1));
 
 		m_Radius = 5.5f;
+		m_NumberOfShots = 4;
 
 		if (!p_Player->m_GameOver)
 		{
@@ -239,11 +222,11 @@ void UFO::Spawn(int size)
 	}
 	else if (m_Size == 1)
 	{
-		m_AimedShot = true;
 		m_Points = 1000;
 		m_ShipMesh->setScale(Vector3(0.5, 0.5, 0.5));
 
 		m_Radius = 3.5f;
+		m_NumberOfShots = 2;
 
 		if (!p_Player->m_GameOver)
 		{
@@ -356,7 +339,7 @@ void UFO::ChangeVector(void)
 	ResetVectorTimer();
 }
 
-void UFO::FireShot(float directionInRadians)
+void UFO::FireShotAt(float directionInRadians)
 {
 	float speed = 27;
 
@@ -372,14 +355,44 @@ void UFO::FireShot(float directionInRadians)
 	}
 }
 
+void UFO::FireShot(void)
+{
+	if (!p_Shot->m_Active)
+	{
+		if (p_Player->m_Active)
+		{
+			float var = m_NumberOfShots + 1;
+
+			if (m_NumberOfShots > m_NumberOfShotsAtRocks)
+				var = Random::Number(m_NumberOfShotsAtRocks, m_NumberOfShots + 1);
+
+			if (var > m_NumberOfShots)
+			{
+				FireAimedShot();
+				m_NumberOfShotsAtRocks = 0;
+			}
+			else
+			{
+				FireRandomShot();
+				m_NumberOfShotsAtRocks++;
+			}
+		}
+		else
+		{
+			FireRandomShot();
+		}
+	}
+}
+
 void UFO::FireAimedShot(void)
 {
-	FireShot(atan2(p_Player->Position().y - m_Position.y, p_Player->Position().x - m_Position.x));
+	FireShotAt(atan2(p_Player->Position().y - m_Position.y + Random::Number(0, 0.5) - Random::Number(0, 0.5),
+		p_Player->Position().x - m_Position.x + Random::Number(0, 0.5) - Random::Number(0, 0.5)));
 }
 
 void UFO::FireRandomShot(void)
 {
-	FireShot(Random::Number(0, PI * 2));
+	FireShotAt(Random::Number(0, PI * 2));
 }
 
 void UFO::Deactivate(void)

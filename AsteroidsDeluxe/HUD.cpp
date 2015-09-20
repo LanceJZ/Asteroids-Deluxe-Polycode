@@ -12,11 +12,11 @@ HUD::HUD(void)
 	m_CopyrightLocation = Vector3(0, -m_WindowHeight / 1.05, 0);
 	m_SelectionLettersLocation = 0;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 6; i++)
 	{
 		m_GameInstructionLetters[i] = new SceneMesh(Mesh::LINE_MESH);
 
-		m_GameTextLocation[i] = Vector3(0, -m_WindowHeight / 1.8 + (i * -2.5), 0);
+		m_GameTextLocation[i] = Vector3(0, -m_WindowHeight / 2 + (i * -2.5), 0);
 	}
 
 	for (int i = 0; i < 2; i++)
@@ -37,15 +37,16 @@ HUD::HUD(void)
 	}
 
 	m_GameText[0] = "GAME OVER";
-	m_GameText[1] = "N OR ENTER KEY TO START OR RESTART GAME";
-	m_GameText[2] = "P KEY TO PAUSE GAME";
-	m_GameText[3] = "ARROW KEYS TO CONTROL SHIP UP FOR THRUST";
-	m_GameText[4] = "LEFT CTRL KEY OR SPACE TO FIRE";
-	m_GameText[5] = "RIGHT CTRL KEY FOR HYPERSPACE";
-	m_GameText[6] = "HIGH SCORE HEROES";
-	m_GameText[7] = "NEW HIGH SCORE";
-	m_GameText[8] = "ROTATE TO SELECT LETTER FIRE KEY TO SELECT";
-	m_GameText[9] = "ASTEROIDS COPYRIGHT ATARI MCMLXXIX";
+	m_GameText[1] = "HIGH SCORE HEROES";
+	m_GameText[2] = "NEW HIGH SCORE";
+	m_GameText[3] = "ROTATE TO SELECT LETTER FIRE KEY TO SELECT";
+	m_GameText[4] = "ASTEROIDS DELUXE COPYRIGHT ATARI MCMLXXX";
+	m_GameText[5] = "N OR ENTER KEY TO START OR RESTART GAME";
+	m_GameText[6] = "P KEY TO PAUSE GAME";
+	m_GameText[7] = "ARROW KEYS TO CONTROL SHIP UP FOR THRUST";
+	m_GameText[8] = "LEFT CTRL KEY OR SPACE TO FIRE";
+	m_GameText[9] = "LEFT SHIFT KEY OR LEFT ALT KEY FOR SHIELD";
+	m_GameText[10] = "WATCH OUT FOR THE DEATH STAR";
 
 	m_GameOver = true;
 	m_NewHighScore = false;
@@ -62,7 +63,8 @@ HUD::HUD(void)
 
 	LoadHighScores();
 	// Pass high score from file (or default if no file), to high score display on top.
-	m_PlayerHighScore = m_HighScores[0].Score;	
+	m_HighScore = m_HighScores[0].Score;
+	m_HighScoreName = m_HighScores[0].Name;
 }
 
 void HUD::Setup(std::shared_ptr<Scene> scene)
@@ -73,6 +75,7 @@ void HUD::Setup(std::shared_ptr<Scene> scene)
 	SetupHighScoreList();
 	DisplayHighScores(0, true);
 	Add(0);
+	DisplayHighScore();
 
 	//Sound -------
 	p_NewShipSound = std::unique_ptr<Sound>(new Sound("audio/NewShip.ogg"));
@@ -113,32 +116,20 @@ void HUD::Add(int score)
 			p_NewShipSound->Play();
 	}
 
-	if (m_Score > m_PlayerHighScore)
-		m_PlayerHighScore = m_Score;
+	if (m_Score > m_HighScore)
+	{
+		m_HighScore = m_Score;
+		m_HighScoreName = "   ";
+		DisplayHighScore();
+	}
 
 	p_Scene->removeEntity(m_ScoreNumbers);
-	p_Scene->removeEntity(m_HighScoreNumbers);
 	m_ScoreNumbers = NULL;
-	m_HighScoreNumbers = NULL;
 	m_ScoreNumbers = new SceneMesh(Mesh::LINE_MESH);
-	m_HighScoreNumbers = new SceneMesh(Mesh::LINE_MESH);
 
-	float loc = 0;
-	unsigned int number = m_PlayerHighScore;
-
-	do
-	{
-		unsigned int digit = number % 10;
-		number /= 10;
-		loc++;
-	} while (number > 0);
-
-	m_PlayerHighScoreLocation = Vector3(-loc / 2, m_WindowHeight - 0.25f, 0);
 
 	ProcessNumber(m_ScoreNumbers, m_Score, m_PlayerScoreLocation, 1);
-	ProcessNumber(m_HighScoreNumbers, m_PlayerHighScore, m_PlayerHighScoreLocation, 0.5);
 	m_ScoreNumbers->cacheToVertexBuffer(true);
-	m_HighScoreNumbers->cacheToVertexBuffer(true);
 }
 
 void HUD::LostLife(void)
@@ -162,7 +153,7 @@ void HUD::NewGame(void)
 	m_GameOverLetters->enabled = false;
 	DisplayHighScores(0, false);
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 6; i++)
 	{
 		m_GameInstructionLetters[i]->enabled = false;
 	}
@@ -314,21 +305,47 @@ void HUD::MakeDefaultHighScores(void)
 	}
 }
 
+void HUD::DisplayHighScore(void)
+{
+	p_Scene->removeEntity(m_HighScoreNumbers);
+	p_Scene->removeEntity(m_HighScoreLetters);
+	m_HighScoreNumbers = NULL;
+	m_HighScoreNumbers = new SceneMesh(Mesh::LINE_MESH);
+	m_HighScoreLetters = NULL;
+	m_HighScoreLetters = new SceneMesh(Mesh::LINE_MESH);
+
+	float loc = 0;
+	unsigned int number = m_HighScore;
+
+	do
+	{
+		unsigned int digit = number % 10;
+		number /= 10;
+		loc++;
+	} while (number > 0);
+
+	m_PlayerHighScoreLocation = Vector3(-loc / 2, m_WindowHeight - 0.25f, 0);
+	ProcessNumber(m_HighScoreNumbers, m_HighScore, m_PlayerHighScoreLocation, 0.5);
+	ProcessTextLine(m_HighScoreLetters, m_HighScoreName, m_PlayerHighScoreLocation + Vector3(-3, 0, 0), 0.25);
+	m_HighScoreNumbers->cacheToVertexBuffer(true);
+	m_HighScoreLetters->cacheToVertexBuffer(true);
+}
+
 void HUD::SetupTextMeshs(void)
 {
 	ProcessTextLine(m_GameOverLetters, m_GameText[0], m_GameOverLocation, 1);
-	ProcessTextLine(m_HighScoreTitleLetters, m_GameText[6], m_HighScoreTitleLocation, 0.5);
-	ProcessTextLine(m_CopyrightLetters, m_GameText[9], m_CopyrightLocation, 0.25);
+	ProcessTextLine(m_HighScoreTitleLetters, m_GameText[2], m_HighScoreTitleLocation, 0.5);
+	ProcessTextLine(m_CopyrightLetters, m_GameText[4], m_CopyrightLocation, 0.25);
 	m_HighScoreTitleLetters->enabled = false;
 
-	for (int i = 1; i < 6; i++)
+	for (int i = 0; i < 6; i++)
 	{
-		ProcessTextLine(m_GameInstructionLetters[i - 1], m_GameText[i], m_GameTextLocation[i - 1], 0.5);
+		ProcessTextLine(m_GameInstructionLetters[i], m_GameText[i + 5], m_GameTextLocation[i], 0.5);
 	}
 
 	for (int i = 0; i < 2; i++)
 	{
-		ProcessTextLine(m_NewHighScoreLetters[i], m_GameText[i + 7], m_NewHighScoreTextLocation[i], 0.5);
+		ProcessTextLine(m_NewHighScoreLetters[i], m_GameText[i + 1], m_NewHighScoreTextLocation[i], 0.5);
 		m_NewHighScoreLetters[i]->enabled = false;
 	}
 }
@@ -383,9 +400,9 @@ void HUD::ProcessNumber(SceneMesh *numbers, int number, Vector3 locationStart, f
 	} while (numberIn > 0);
 
 	numbers->setPosition(locationStart);
-	//numbers->cacheToVertexBuffer(true);
-	//numbers->lineSmooth = true;
-	numbers->setColor(1.0, 1.0, 1.0, 0.85);
+	numbers->cacheToVertexBuffer(true);
+	numbers->lineSmooth = true;
+	numbers->setColor(0.7, 0.7, 0.9, 1.0);
 	p_Scene->addChild(numbers);
 }
 
@@ -425,9 +442,9 @@ void HUD::ProcessTextLine(SceneMesh * letters, std::string textLine, Vector3 loc
 	}
 
 	letters->setPosition(locationStart);
-	//letters->cacheToVertexBuffer(true);
-	//letters->lineSmooth = true;
-	letters->setColor(1.0, 1.0, 1.0, 0.85);
+	letters->cacheToVertexBuffer(true);
+	letters->lineSmooth = true;
+	letters->setColor(0.8, 0.8, 1.0, 1.0);
 	p_Scene->addChild(letters);
 }
 

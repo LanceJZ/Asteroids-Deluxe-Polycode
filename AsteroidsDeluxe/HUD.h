@@ -58,22 +58,22 @@ private:
 	bool m_HighScoreUpdated;
 	bool m_HighScoreNameEntered;
 	int m_HighScoreRank; //The place where the new high score ranks at.
-	float m_HighScoreTimer;
-	float m_HighScoreTimerAmount;
-	unsigned int m_Score;
-	unsigned int m_PlayerHighScore;
-	unsigned int m_NextNewShipScore;
 	int m_Lives;
 	int m_HighScoreSelectionOn;
-
+	unsigned int m_Score;
+	unsigned int m_HighScore;
+	unsigned int m_NextNewShipScore;
+	float m_HighScoreTimer;
+	float m_HighScoreTimerAmount;
+	std::string m_HighScoreName;
 	std::string m_HighScoreSelectedLetters;
-	std::string m_GameText[10];
+	std::string m_GameText[11];
 	std::string m_SaveFileName;
 
 	Vector3 m_HitsLocation;
 	Vector3 m_GameOverLocation;
 	Vector3 m_CopyrightLocation;
-	Vector3 m_GameTextLocation[5];
+	Vector3 m_GameTextLocation[6];
 	Vector3 m_PlayerScoreLocation;
 	Vector3 m_PlayerHighScoreLocation;
 	Vector3 m_HighScoreTitleLocation;
@@ -96,16 +96,18 @@ private:
 
 	SceneMesh *m_ScoreNumbers;
 	SceneMesh *m_HighScoreNumbers;
+	SceneMesh *m_HighScoreLetters;
 	SceneMesh *m_GameOverLetters;
 	SceneMesh *m_SelectionLetters;
 	SceneMesh *m_HighScoreTitleLetters;
 	SceneMesh *m_NewHighScoreLetters[2];
-	SceneMesh *m_GameInstructionLetters[5];
+	SceneMesh *m_GameInstructionLetters[6];
 	SceneMesh *m_CopyrightLetters;
 
 	void SaveHighScores(void);
 	void LoadHighScores(void);
 	void MakeDefaultHighScores(void);
+	void DisplayHighScore(void);
 	void SetupTextMeshs(void);
 	void SetupNewScoreSelectMesh(void);
 	void SetupHighScoreList(void);

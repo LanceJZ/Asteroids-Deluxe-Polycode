@@ -25,7 +25,6 @@ public:
 	void ShieldOn(void);
 	void ShieldOff(void);
 	void FireShot(void);
-	void Hyperspace(void);
 	void Hit(void);
 	void UpdateLivesDisplay(void);
 	void SetClear(void);
@@ -62,6 +61,8 @@ private:
 	float m_FlameTimerAmount;
 	float m_ShieldPower;
 
+	const Color m_MeshColor = Color(0.7, 0.7, 1.0, 1.0);
+
 	std::unique_ptr<Timer> p_ExplodeTimer;
 	std::unique_ptr<Timer> p_ClearTimer;
 	std::unique_ptr<Timer> p_GameOverTimer;
@@ -79,11 +80,11 @@ private:
 	SceneMesh *m_ShipExplosionMesh[6];
 	SceneMesh *m_ShipWingMesh;
 	SceneMesh *m_FlameMesh;
-	SceneMesh *m_ShipLivesMesh;
 
 	void ApplyThrust(void);
 	void StartExplode(void);
 	void UpdateExplode(Number *elapsed);
+	void SetRotationPosition(void);
 	void ResetExplodeTimer(void);
 	void ResetClearTimer(void);
 	void ResetGameOverTimer(void);

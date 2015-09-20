@@ -19,11 +19,17 @@ Player::Player(void)
 	{
 		p_ExpLoc[i] = std::unique_ptr<Location>(new Location());
 	}
+
+	m_ShipMesh = new SceneMesh(Mesh::LINE_LOOP_MESH);
+	m_ShipWingMesh = new SceneMesh(Mesh::LINE_LOOP_MESH);
+	m_ShieldMesh = new SceneMesh(Mesh::LINE_LOOP_MESH);
+	m_FlameMesh = new SceneMesh(Mesh::LINE_MESH);
 }
 
 void Player::Setup(std::shared_ptr<CollisionScene> scene)
 {
 	p_Scene = scene;
+	
 	//Player original ship is 23 (11.5 x 2) pixels long, and 14 (8 x 2) pixels wide.
 	//The bottom is not flat. It starts 4 pixels from the side and 4 from the bottom and goes down at an angle to the bottom corner.
 	//The bottom is flat only from the upper part to the other side point 4 from the other side.
@@ -31,11 +37,45 @@ void Player::Setup(std::shared_ptr<CollisionScene> scene)
 	//The left of screen, positive X is the direction for rotation zero.
 	//The top of the screen, positive Y is the direction for rotation zero.
 
-	m_ShipMesh = new SceneMesh(Mesh::LINE_LOOP_MESH);
-	m_ShipWingMesh = new SceneMesh(Mesh::LINE_LOOP_MESH);
-	m_ShipLivesMesh = new SceneMesh(Mesh::LINE_LOOP_MESH);
-	m_ShieldMesh = new SceneMesh(Mesh::LINE_LOOP_MESH);
-	m_FlameMesh = new SceneMesh(Mesh::LINE_MESH);
+	//Ship mesh front pointing to left of screen.
+	m_ShipMesh->getMesh()->addVertex(-1.15, 0.7, 0.0); //Top back tip.
+	m_ShipMesh->getMesh()->addVertex(1.15, 0, 0.0); //Nose pointing to the left of screen.
+	m_ShipMesh->getMesh()->addVertex(-1.15, -0.7, 0.0); //Bottom back tip.
+	m_ShipMesh->getMesh()->addVertex(-0.95, -0.4, 0.0); //Bottom inside back.
+	m_ShipMesh->getMesh()->addVertex(-0.95, 0.4, 0.0); //Top inside back.
+	m_ShipMesh->cacheToVertexBuffer(true);
+	m_ShipMesh->lineSmooth = true;
+
+	m_ShipWingMesh->getMesh()->addVertex(-0.55, 1.25, 0); //Top wing tip.
+	m_ShipWingMesh->getMesh()->addVertex(0.15, 0, 0); // Front of wing middle of ship.
+	m_ShipWingMesh->getMesh()->addVertex(-0.55, -1.25, 0); // Bottom wing tip.
+	m_ShipWingMesh->getMesh()->addVertex(-1.0, -0.3, 0); // Connect to bottom back tip.
+	m_ShipWingMesh->getMesh()->addVertex(-1.0, 0.3, 0); // Connect to top back tip.
+	m_ShipWingMesh->cacheToVertexBuffer(true);
+	m_ShipWingMesh->lineSmooth = true;
+
+	m_ShipMesh->addChild(m_ShipWingMesh);
+	
+	m_FlameMesh->getMesh()->addVertex(-0.95, -0.7, 0.0); //Bottom inside back.
+	m_FlameMesh->getMesh()->addVertex(-1.6, 0.0, 0.0); //Tip of flame.
+	m_FlameMesh->getMesh()->addVertex(-0.95, 0.7, 0.0); //Top inside back.
+	m_FlameMesh->getMesh()->addVertex(-1.6, 0.0, 0.0); //Tip of flame.
+	m_FlameMesh->cacheToVertexBuffer(true);
+	m_FlameMesh->lineSmooth = true;
+
+	m_ShipMesh->addChild(m_FlameMesh);
+	m_FlameMesh->enabled = false;
+
+	for (int i = 0; i < 8; i++)
+	{
+		float rad = 1.75;
+		float rot = PI / 8;
+
+		m_ShieldMesh->getMesh()->addVertex(rad * cos(2 * PI * i / 8 + rot), rad * sin(2 * PI * i / 8 + rot), 0);
+	}
+
+	m_ShieldMesh->cacheToVertexBuffer(true);
+	m_ShieldMesh->lineSmooth = true;
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -64,62 +104,12 @@ void Player::Setup(std::shared_ptr<CollisionScene> scene)
 	{
 		m_ShipExplosionMesh[i]->cacheToVertexBuffer(true);
 		m_ShipExplosionMesh[i]->lineSmooth = true;
+		m_ShipExplosionMesh[i]->setColor(m_MeshColor);
 		p_Scene->addChild(m_ShipExplosionMesh[i]);
 		m_ShipExplosionMesh[i]->enabled = false;
 	}
 
-	m_ShipLivesMesh->cacheToVertexBuffer(true);
-	m_ShipLivesMesh->lineSmooth = true;
-	m_ShipLivesMesh->setColor(0.9, 0.9, 1.0, 1.0);
-
-	//Ship mesh front pointing to left of screen.
-	m_ShipMesh->getMesh()->addVertex(-1.15, 0.8, 0.0); //Top back tip.
-	m_ShipMesh->getMesh()->addVertex(1.15, 0, 0.0); //Nose pointing to the left of screen.
-	m_ShipMesh->getMesh()->addVertex(-1.15, -0.8, 0.0); //Bottom back tip.
-	m_ShipMesh->getMesh()->addVertex(-0.95, -0.4, 0.0); //Bottom inside back.
-	m_ShipMesh->getMesh()->addVertex(-0.95, 0.4, 0.0); //Top inside back.
-	m_ShipMesh->cacheToVertexBuffer(true);
-	m_ShipMesh->lineSmooth = true;
-	m_ShipMesh->setColor(0.9, 0.9, 1.0, 1.0);
-
-	m_ShipWingMesh->getMesh()->addVertex(-0.55, 1.25, 0); //Top wing tip.
-	m_ShipWingMesh->getMesh()->addVertex(0.15, 0, 0); // Front of wing middle of ship.
-	m_ShipWingMesh->getMesh()->addVertex(-0.55, -1.25, 0); // Bottom wing tip.
-	m_ShipWingMesh->getMesh()->addVertex(-1.15, -0.4, 0); // Connect to bottom back tip.
-	m_ShipWingMesh->getMesh()->addVertex(-1.15, 0.4, 0); // Connect to top back tip.
-	m_ShipWingMesh->cacheToVertexBuffer(true);
-	m_ShipWingMesh->lineSmooth = true;
-	m_ShipWingMesh->setColor(0.9, 0.9, 1.0, 1.0);
-
-	m_ShipMesh->addChild(m_ShipWingMesh);
-
-	m_ShipLivesMesh->addChild(m_ShipMesh->Clone(false, true));
-	m_ShipLivesMesh->addChild(m_ShipWingMesh);
-
 	m_Radius = 2.5f;
-
-	m_FlameMesh->getMesh()->addVertex(-0.95, -0.7, 0.0); //Bottom inside back.
-	m_FlameMesh->getMesh()->addVertex(-1.6, 0.0, 0.0); //Tip of flame.
-	m_FlameMesh->getMesh()->addVertex(-0.95, 0.7, 0.0); //Top inside back.
-	m_FlameMesh->getMesh()->addVertex(-1.6, 0.0, 0.0); //Tip of flame.
-	m_FlameMesh->cacheToVertexBuffer(true);
-	m_FlameMesh->lineSmooth = true;
-	m_FlameMesh->setColor(0.9, 0.9, 1.0, 1.0);
-
-	m_ShipMesh->addChild(m_FlameMesh);
-	m_FlameMesh->enabled = false;
-
-	for (int i = 0; i < 8; i++)
-	{
-		float rad = 1.75;
-		float rot = PI / 8;
-
-		m_ShieldMesh->getMesh()->addVertex(rad * cos(2 * PI * i / 8 + rot), rad * sin(2 * PI * i / 8 + rot), 0);
-	}
-
-	m_ShieldMesh->cacheToVertexBuffer(true);
-	m_ShieldMesh->lineSmooth = true;
-	m_ShieldMesh->setColor(0.9, 0.9, 1.0, 1.0);
 	
 	for (int i = 0; i < 4; i++)
 	{
@@ -170,25 +160,29 @@ void Player::Deactivate(void)
 
 void Player::NewGame(void)
 {
-	m_Rotation.Amount = 90;
+	m_Rotation.Amount = 180;
 	Reset();
+	SetRotationPosition();
 	Activate();
 	p_HUD->NewGame();
 	p_HUD->Add(0);
-	
+
+	m_ShipMesh->setColor(m_MeshColor);
+	//m_ShipWingMesh->setColor(m_MeshColor);
+	//m_FlameMesh->setColor(m_MeshColor);
+
 	UpdateLivesDisplay();
 }
 
 void Player::Reset(void)
 {
 	m_Hit = false;	
-	m_ShipMesh->setRotationEuler(Vector3(0, 0, m_Rotation.Amount));
 	m_Position = Vector3(0, 0, 0);
 	m_Velocity = Vector3(0, 0, 0);
 	m_Acceleration = Vector3(0, 0, 0);
 	m_ShipMesh->enabled = true;
 	m_ShieldMesh->enabled = false;
-	m_ShieldPower = 100;
+	m_ShieldPower = 170;
 }
 
 void Player::DeactivateShot(int shot)
@@ -245,7 +239,10 @@ void Player::Update(Number *elapsed)
 				p_HUD->GameOver();
 			}
 			else if (m_ClearToSpawn)
+			{
 				Reset();
+				SetRotationPosition();
+			}
 		}
 	}
 	else
@@ -282,7 +279,7 @@ void Player::Update(Number *elapsed)
 				m_ShieldPower += -1 * *elapsed;
 
 				if (m_ShieldPower > 10)
-					m_ShieldMesh->setColor(1, 1, 1, (m_ShieldPower - 10) * .01);
+					m_ShieldMesh->setColor(m_MeshColor + Color(0.0, 0.0, 0.0, (m_ShieldPower - 10) * .01));
 			}
 			else
 			{
@@ -292,10 +289,7 @@ void Player::Update(Number *elapsed)
 		}
 	}
 
-	m_ShipMesh->setPosition(m_Position);
-	m_ShieldMesh->setPosition(m_Position);
-	m_ShipMesh->setRotationEuler(Vector3(0, 0, m_Rotation.Amount));
-	m_ShieldMesh->setRotationEuler(Vector3(0, 0, m_Rotation.Amount));
+	SetRotationPosition();
 
 	CheckForEdge();
 }
@@ -349,16 +343,6 @@ void Player::TurnOff(void)
 	m_Rotation.Velocity = 0;
 }
 
-void Player::Hyperspace(void)
-{
-	if (!m_Hit)
-	{
-		m_Velocity = Vector3(0, 0, 0);
-		m_Position.x = Random::Number(3, m_WindowWidth * 2 - 3) - m_WindowWidth;
-		m_Position.y = Random::Number(3, m_WindowHeight * 2 - 3) - m_WindowHeight;
-	}
-}
-
 void Player::Hit(void)
 {
 	if (!m_Hit)
@@ -390,12 +374,12 @@ void Player::Hit(void)
 
 void Player::ShieldHit(Vector3 velocity, bool shot)
 {
-	m_ShieldPower -= 10;
+	m_ShieldPower -= 60;
 
 	if (shot)
-		m_ShieldPower -= 10;
+		m_ShieldPower -= 60;
 	else
-		m_Velocity += velocity * 0.25 + (m_Velocity * 1.25) * -1;
+		m_Velocity += velocity * 1.5 + (m_Velocity * 1.5) * -1;
 }
 
 void Player::UpdateLivesDisplay(void)
@@ -411,8 +395,9 @@ void Player::UpdateLivesDisplay(void)
 
 	for (int i = 0; i < p_HUD->Lives(); i++)
 	{
-		p_ShipLives.push_back(m_ShipLivesMesh->Clone(true, true));
-		p_ShipLives.at(p_ShipLives.size() - 1)->setColor(1.0, 1.0, 1.0, 0.95);
+		p_ShipLives.push_back(m_ShipMesh->Clone(false, true));
+		p_ShipLives.at(p_ShipLives.size() - 1)->addChild(m_ShipWingMesh->Clone(false, true));
+		//p_ShipLives.at(p_ShipLives.size() - 1)->setColor(m_MeshColor);
 		p_ShipLives.at(p_ShipLives.size() - 1)->setPosition(livesPos);
 		p_ShipLives.at(p_ShipLives.size() - 1)->setRotationEuler(Vector3(0, 0, 90));
 		p_Scene->addChild(p_ShipLives.at(p_ShipLives.size() - 1));
@@ -478,7 +463,7 @@ void Player::ApplyThrust(void)
 	// Convert degrees to radians. (Why wont people use radians in mesh math?)
 	float rad = (m_Rotation.Amount) * TORADIANS;
 
-	float thrustAmount = 0.45;
+	float thrustAmount = 0.68;
 
 	m_Acceleration = Vector3(cos(rad) * thrustAmount, sin(rad) * thrustAmount, 0);
 
@@ -532,7 +517,6 @@ void Player::StartExplode(void)
 
 void Player::UpdateExplode(Number *elapsed)
 {
-	//m_ShipMesh->setColor(1.0, 0.1, 0.1, 0.8);
 	for (int i = 0; i < 6; i++)
 	{
 		p_ExpLoc[i]->Update(elapsed);
@@ -541,6 +525,14 @@ void Player::UpdateExplode(Number *elapsed)
 		m_ShipExplosionMesh[i]->setRotationEuler(Vector3(0, 0, p_ExpLoc[i]->m_Rotation.Amount));
 	}
 
+}
+
+void Player::SetRotationPosition(void)
+{
+	m_ShipMesh->setPosition(m_Position);
+	m_ShieldMesh->setPosition(m_Position);
+	m_ShipMesh->setRotationEuler(Vector3(0, 0, m_Rotation.Amount));
+	m_ShieldMesh->setRotationEuler(Vector3(0, 0, m_Rotation.Amount));
 }
 
 void Player::ResetExplodeTimer(void)

@@ -24,6 +24,8 @@ public:
 	bool m_Done;
 	int m_Points;
 	int m_Size;
+	int m_NumberOfShots;
+	int m_NumberOfShotsAtRocks;
 
 	SceneMesh *ShotMesh(void);
 	SceneMesh *m_ShipMesh;
@@ -39,7 +41,6 @@ private:
 	std::unique_ptr<Sound> p_EngineLargeSound;
 	std::unique_ptr<Sound> p_EngineSmallSound;
 
-	bool m_AimedShot;
 	bool m_FromRight;
 	bool m_ShieldHit;
 	bool m_ShotHitShield;
@@ -51,7 +52,8 @@ private:
 	void ResetFireTimer(void);
 	void ResetVectorTimer(void);
 	void ChangeVector(void);
-	void FireShot(float directionInRadians);
+	void FireShotAt(float directionInRadians);
+	void FireShot(void);
 	void FireAimedShot(void);
 	void FireRandomShot(void);
 };

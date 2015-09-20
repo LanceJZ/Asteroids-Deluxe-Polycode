@@ -2,6 +2,7 @@
 #include <vector>
 #include "Rock.h"
 #include "Explosion.h"
+#include "EnemyController.h"
 
 struct RockCount
 {
@@ -15,12 +16,14 @@ class RockControl
 public:
 	RockControl(void);
 
-	void Setup(std::shared_ptr<CollisionScene> scene, std::shared_ptr<Player> player, std::shared_ptr<UFOControl> ufo);
+	void Setup(std::shared_ptr<CollisionScene> scene, std::shared_ptr<Player> player,
+		std::shared_ptr<UFOControl> ufo, std::shared_ptr<EnemyController> enemy);
 	void Update(Number *elapsed);
 	void Pause(bool paused);
 	void NewGame(void);
 
 private:
+	bool m_EnemySpawnOn;
 	bool m_SoundOn;
 	int m_NumberOfRocks;
 	int m_NumberOfRocksLastFrame;
@@ -30,6 +33,7 @@ private:
 
 	std::shared_ptr<Player> p_Player;
 	std::shared_ptr<UFOControl> p_UFO;
+	std::shared_ptr<EnemyController> p_Enemy;
 
 	std::vector<std::unique_ptr<Explosion>> p_Explosions;
 	std::vector<std::unique_ptr<Rock>> p_LargeRocks;

@@ -30,7 +30,7 @@ void EnemyShip::Setup(std::shared_ptr<CollisionScene> scene)
 	m_ShipMesh->getMesh()->addVertex(-0.4, 0.0, 0.0); // Back inside indent.
 
 	m_ShipMesh->cacheToVertexBuffer(true);
-	m_ShipMesh->setColor(0.7, 0.7, 0.9, 0.9);
+	m_ShipMesh->setColor(0.7, 0.7, 0.9, 1.0);
 	m_ShipMesh->lineSmooth = true;
 
 	Deactivate();
@@ -42,21 +42,25 @@ void EnemyShip::Update(Number * elapsed)
 {
 	Location::Update(elapsed);	
 
-	if (!m_InPair)
+	if (p_Player->m_Active)
+		m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
+
+	float rad = (m_Rotation.Amount) * TORADIANS;
+
+	m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
+
+	SetRotationPosition();
+
+	CheckPlayerHit();
+
+	if (m_NewWave)
 	{
-		if (p_Player->m_Active)
-			m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
-
-		float rad = (m_Rotation.Amount) * TORADIANS;
-
-		m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
-
-		SetRotationPosition();
-
-		CheckForEdge();
-
-		CheckPlayerHit();
+		if (m_Position.x > m_WindowWidth || m_Position.x < -m_WindowWidth
+			|| m_Position.y > m_WindowHeight || m_Position.y < -m_WindowHeight)
+			Deactivate();
 	}
+	else
+		CheckForEdge();
 }
 
 void EnemyShip::Spawn(Vector3 position, float rotation)
@@ -69,6 +73,11 @@ void EnemyShip::Spawn(Vector3 position, float rotation)
 
 void EnemyShip::Pause(bool paused)
 {
+}
+
+void EnemyShip::NewWave(bool activated)
+{
+	m_NewWave = activated;
 }
 
 void EnemyShip::Deactivate(void)
@@ -92,6 +101,7 @@ void EnemyShip::Enable(void)
 	m_ShipMesh->enabled = true;
 	m_Active = true;
 	m_ShieldHit = false;
+	m_NewWave = false;
 }
 
 void EnemyShip::SetRotationPosition(void)

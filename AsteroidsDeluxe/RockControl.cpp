@@ -4,11 +4,13 @@ RockControl::RockControl(void)
 {
 }
 
-void RockControl::Setup(std::shared_ptr<CollisionScene> scene, std::shared_ptr<Player> player, std::shared_ptr<UFOControl> ufo)
+void RockControl::Setup(std::shared_ptr<CollisionScene> scene, std::shared_ptr<Player> player,
+	std::shared_ptr<UFOControl> ufo, std::shared_ptr<EnemyController> enemy)
 {
 	p_Scene = scene;
 	p_Player = player;
 	p_UFO = ufo;
+	p_Enemy = enemy;
 
 	NewGame();
 
@@ -27,6 +29,14 @@ void RockControl::Update(Number *elapsed)
 	RockCount mRC = UpdateMedRocks(elapsed, lRC.numberActive, lRC.playerAllClear);
 
 	RockCount rocksCounted = UpdateSmallRocks(elapsed, mRC.numberActive, mRC.playerAllClear);
+
+	if (!m_EnemySpawnOn)
+		if (lRC.numberActive < 1 && mRC.numberActive < 1 && rocksCounted.numberActive < 6)
+		{
+			p_Enemy->TimeToSpawn(true);
+			p_Enemy->NewWave(false);
+			m_EnemySpawnOn = true;
+		}
 
 	if (p_Player->m_Hit && p_Player->m_Spawn)
 	{
@@ -286,6 +296,10 @@ void RockControl::SpawnExplosion(Vector3 position, float size)
 
 void RockControl::SpawnNewWave(int NumberOfRocks)
 {
+	m_EnemySpawnOn = false;
+	p_Enemy->TimeToSpawn(false);
+	p_Enemy->NewWave(true);
+
 	for (int rock = 0; rock < NumberOfRocks; rock++)
 	{
 		bool spawnnewrock = true;

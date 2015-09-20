@@ -12,6 +12,7 @@ public:
 	void Spawn(Vector3 position, float rotation);
 	void SetRotationPosition(void);
 	void Pause(bool paused);
+	void NewWave(bool activated);
 	void Deactivate(void);
 	void Enable(void);
 	bool PlayerNotClear(void);
@@ -24,6 +25,7 @@ public:
 	
 private:
 	bool m_ShieldHit;
+	bool m_NewWave;
 	float m_Speed;
 	int m_Points;
 

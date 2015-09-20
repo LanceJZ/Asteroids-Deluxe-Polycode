@@ -29,7 +29,7 @@ void Rock::Setup(std::shared_ptr<CollisionScene> scene, int size, std::shared_pt
 
 	m_RockMesh->cacheToVertexBuffer(true);
 	m_RockMesh->lineSmooth = true;
-	m_RockMesh->setColor(0.7, 0.7, 0.9, 0.85);
+	m_RockMesh->setColor(0.7, 0.7, 0.9, 1.0);
 
 	m_Size = size;
 	p_Scene = scene;
