@@ -21,7 +21,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -58,14 +58,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\PolycodeView;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include\freetype2;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include\AL;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include\bullet;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include\Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Polycode_New\include</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>Polycore_d.lib;Polycode3DPhysics_d.lib;BulletDynamics_d.lib;BulletCollision_d.lib;LinearMath_d.lib;winmm.lib;ws2_32.lib;opengl32.lib;glu32.lib;zlibd.lib;freetype_d.lib;liboggd.lib;libvorbisd.lib;libvorbisfiled.lib;OpenAL32d.lib;kernel32.lib;physfsd.lib;libpng15_staticd.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\Polycode_New\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

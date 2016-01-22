@@ -2,9 +2,12 @@
 
 EnemyPod::EnemyPod()
 {
+	// When player explodes, stays on screen, like a rock, leaves off edge of screen.
+
 	m_Points = 50;
 	m_Speed = 10;
 	m_Radius = 12;
+	m_Active = false;
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -30,8 +33,9 @@ void EnemyPod::Setup(std::shared_ptr<CollisionScene> scene)
 void EnemyPod::Update(Number * elapsed)
 {
 	Location::Update(elapsed);
-
+	
 	SetPosition();
+	CheckPlayerHit();
 
 	if (m_NewWave)
 	{
@@ -74,6 +78,7 @@ void EnemyPod::Enable(void)
 	m_Active = true;
 	m_ShieldHit = false;
 	m_NewWave = false;
+	m_Hit = false;
 }
 
 void EnemyPod::SetPosition(void)
@@ -86,10 +91,15 @@ void EnemyPod::SetPosition(void)
 		p_Pairs[i]->SetRotationPosition();
 }
 
+void EnemyPod::CheckPlayerHit(void)
+{
+	for (int i = 0; i < 3; i++)
+		m_Hit = p_Pairs[i]->CheckPlayerHit();
+}
+
 void EnemyPod::Deactivate(void)
 {
 	m_Active = false;
-	m_Hit = false;
 	m_Done = false;
 
 	for (int i = 0; i < 3; i++)

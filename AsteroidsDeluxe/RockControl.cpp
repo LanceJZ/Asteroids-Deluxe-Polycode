@@ -31,7 +31,7 @@ void RockControl::Update(Number *elapsed)
 	RockCount rocksCounted = UpdateSmallRocks(elapsed, mRC.numberActive, mRC.playerAllClear);
 
 	if (!m_EnemySpawnOn)
-		if (lRC.numberActive < 1 && mRC.numberActive < 1 && rocksCounted.numberActive < 6)
+		if (lRC.numberActive < 1 && rocksCounted.numberActive < 6)
 		{
 			p_Enemy->TimeToSpawn(true);
 			p_Enemy->NewWave(false);
@@ -40,7 +40,7 @@ void RockControl::Update(Number *elapsed)
 
 	if (p_Player->m_Hit && p_Player->m_Spawn)
 	{
-		if (rocksCounted.playerAllClear && !p_UFO->ShotActive() && !p_UFO->PlayerNotClear())
+		if (rocksCounted.playerAllClear && !p_UFO->p_UFO->p_Shot->m_Active && !p_UFO->p_UFO->PlayerNotClear())
 		{
 			p_Player->SetClear();
 		}
@@ -59,15 +59,21 @@ void RockControl::Update(Number *elapsed)
 	
 	if (rocksCounted.numberActive < 1)
 	{
-		if (m_NumberOfRocks < 18)
-			m_NumberOfRocks++;
+		p_Enemy->TimeToSpawn(false);
+		p_Enemy->NewWave(true);
 
-		m_Wave++;
+		if (!p_Enemy->p_Pod->m_Active)
+		{
+			if (m_NumberOfRocks < 18)
+				m_NumberOfRocks++;
 
-		p_UFO->WaveNumber(m_Wave);
+			m_Wave++;
 
-		SpawnNewWave(m_NumberOfRocks);
-		m_NumberOfRocksHit = 0;
+			p_UFO->WaveNumber(m_Wave);
+
+			SpawnNewWave(m_NumberOfRocks);
+			m_NumberOfRocksHit = 0;
+		}
 	}
 
 	for (int i = 0; i < p_Explosions.size(); i++)
@@ -297,8 +303,6 @@ void RockControl::SpawnExplosion(Vector3 position, float size)
 void RockControl::SpawnNewWave(int NumberOfRocks)
 {
 	m_EnemySpawnOn = false;
-	p_Enemy->TimeToSpawn(false);
-	p_Enemy->NewWave(true);
 
 	for (int rock = 0; rock < NumberOfRocks; rock++)
 	{

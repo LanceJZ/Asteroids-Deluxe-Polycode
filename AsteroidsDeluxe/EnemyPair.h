@@ -15,7 +15,7 @@ public:
 	void NewWave(bool activated);
 	void Deactivate(void);
 	void Enable(void);
-	bool PlayerNotClear(void);
+	bool CheckPlayerHit(void);
 
 	std::unique_ptr<EnemyShip> p_Ships[2];
 
@@ -32,8 +32,6 @@ private:
 	std::shared_ptr<CollisionScene> p_Scene;
 	std::shared_ptr<Player> p_Player;
 	std::shared_ptr<UFOControl> p_UFO;
-
-	void CheckPlayerHit(void);
 
 };
 

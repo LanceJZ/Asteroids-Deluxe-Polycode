@@ -15,9 +15,10 @@ Player::Player(void)
 	p_GameOverTimer = std::unique_ptr<Timer>(new Timer(false, m_GameOverTimerAmount));
 	p_FlameTimer = std::unique_ptr<Timer>(new Timer(false, m_FlameTimerAmount));
 
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		p_ExpLoc[i] = std::unique_ptr<Location>(new Location());
+		m_ShipExplosionMesh[i] = new SceneMesh(Mesh::LINE_MESH);
 	}
 
 	m_ShipMesh = new SceneMesh(Mesh::LINE_LOOP_MESH);
@@ -54,17 +55,16 @@ void Player::Setup(std::shared_ptr<CollisionScene> scene)
 	m_ShipWingMesh->cacheToVertexBuffer(true);
 	m_ShipWingMesh->lineSmooth = true;
 
-	m_ShipMesh->addChild(m_ShipWingMesh);
-	
 	m_FlameMesh->getMesh()->addVertex(-0.95, -0.7, 0.0); //Bottom inside back.
 	m_FlameMesh->getMesh()->addVertex(-1.6, 0.0, 0.0); //Tip of flame.
 	m_FlameMesh->getMesh()->addVertex(-0.95, 0.7, 0.0); //Top inside back.
 	m_FlameMesh->getMesh()->addVertex(-1.6, 0.0, 0.0); //Tip of flame.
 	m_FlameMesh->cacheToVertexBuffer(true);
 	m_FlameMesh->lineSmooth = true;
-
-	m_ShipMesh->addChild(m_FlameMesh);
 	m_FlameMesh->enabled = false;
+
+	m_ShipMesh->addChild(m_ShipWingMesh);
+	m_ShipMesh->addChild(m_FlameMesh);
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -77,22 +77,17 @@ void Player::Setup(std::shared_ptr<CollisionScene> scene)
 	m_ShieldMesh->cacheToVertexBuffer(true);
 	m_ShieldMesh->lineSmooth = true;
 
-	for (int i = 0; i < 6; i++)
-	{
-		m_ShipExplosionMesh[i] = new SceneMesh(Mesh::LINE_MESH);		
-	}
+	m_ShipExplosionMesh[0]->getMesh()->addVertex(-1.0, 0.8, 0.0); //Top back tip.
+	m_ShipExplosionMesh[0]->getMesh()->addVertex(-0.5, 0.4, 0.0); // Half way to nose pointing to the left of screen.
 
-	m_ShipExplosionMesh[0]->getMesh()->addVertex(-1.15, 0.8, 0.0); //Top back tip.
-	m_ShipExplosionMesh[0]->getMesh()->addVertex(-0.1, 0.4, 0.0); // Half way to nose pointing to the left of screen.
+	m_ShipExplosionMesh[1]->getMesh()->addVertex(-0.5, 0.4, 0.0); // Half way to nose pointing to the left of screen.
+	m_ShipExplosionMesh[1]->getMesh()->addVertex(-1.0, 0, 0.0); //Nose pointing to the left of screen.
 
-	m_ShipExplosionMesh[1]->getMesh()->addVertex(-0.1, 0.4, 0.0); // Half way to nose pointing to the left of screen.
-	m_ShipExplosionMesh[1]->getMesh()->addVertex(1.15, 0, 0.0); //Nose pointing to the left of screen.
+	m_ShipExplosionMesh[2]->getMesh()->addVertex(1.0, -0.8, 0.0); //Bottom back tip.
+	m_ShipExplosionMesh[2]->getMesh()->addVertex(0.5, -0.4, 0.0); // Half way to nose pointing to the left of screen.
 
-	m_ShipExplosionMesh[2]->getMesh()->addVertex(-1.15, -0.8, 0.0); //Bottom back tip.
-	m_ShipExplosionMesh[2]->getMesh()->addVertex(0.1, -0.4, 0.0); // Half way to nose pointing to the left of screen.
-
-	m_ShipExplosionMesh[3]->getMesh()->addVertex(0.1, -0.4, 0.0); // Half way to nose pointing to the left of screen.
-	m_ShipExplosionMesh[3]->getMesh()->addVertex(1.15, 0, 0.0); //Nose pointing to the left of screen.
+	m_ShipExplosionMesh[3]->getMesh()->addVertex(0.5, -0.4, 0.0); // Half way to nose pointing to the left of screen.
+	m_ShipExplosionMesh[3]->getMesh()->addVertex(1.0, 0, 0.0); //Nose pointing to the left of screen.
 
 	m_ShipExplosionMesh[4]->getMesh()->addVertex(-0.95, -0.4, 0.0); //Bottom inside back.
 	m_ShipExplosionMesh[4]->getMesh()->addVertex(-0.95, 0, 0.0); // Half way to bottom back tip.
@@ -100,7 +95,13 @@ void Player::Setup(std::shared_ptr<CollisionScene> scene)
 	m_ShipExplosionMesh[5]->getMesh()->addVertex(-0.95, 0.4, 0.0); //Top inside back.
 	m_ShipExplosionMesh[5]->getMesh()->addVertex(-0.95, 0, 0.0); //Half way to top back tip.
 
-	for (int i = 0; i < 6; i++)
+	m_ShipExplosionMesh[6]->getMesh()->addVertex(-1.15, 1.0, 0.0); //Top back tip.
+	m_ShipExplosionMesh[6]->getMesh()->addVertex(-1.0, 0.8, 0.0); // Half way to nose pointing to the left of screen.
+
+	m_ShipExplosionMesh[7]->getMesh()->addVertex(-1.15, -1.0, 0.0); //Bottom back tip.
+	m_ShipExplosionMesh[7]->getMesh()->addVertex(-1.0, -0.8, 0.0); // Half way to nose pointing to the left of screen.
+
+	for (int i = 0; i < 8; i++)
 	{
 		m_ShipExplosionMesh[i]->cacheToVertexBuffer(true);
 		m_ShipExplosionMesh[i]->lineSmooth = true;
@@ -120,6 +121,10 @@ void Player::Setup(std::shared_ptr<CollisionScene> scene)
 	p_HUD = std::unique_ptr<HUD>(new HUD());
 	p_HUD->Setup(scene);
 
+	m_ShipMesh->setColor(m_MeshColor);
+	//m_ShipWingMesh->setColor(m_MeshColor);
+	//m_FlameMesh->setColor(m_MeshColor);
+
 	p_Scene->addCollisionChild(m_ShipMesh, CollisionEntity::SHAPE_MESH);
 	p_Scene->addCollisionChild(m_ShieldMesh, CollisionEntity::SHAPE_MESH);
 	m_ShipMesh->enabled = false;
@@ -136,11 +141,6 @@ void Player::Setup(std::shared_ptr<CollisionScene> scene)
 	p_ThrustSound = std::unique_ptr<Sound>(new Sound("audio/Thrust.ogg"));
 	p_ThrustSound->setVolume(0.5);
 	p_ThrustSound->setPitch(0.75);
-}
-
-float Player::ShotRadius(int shot)
-{
-	return p_Shots[shot]->m_Radius;
 }
 
 void Player::Activate(void)
@@ -161,15 +161,13 @@ void Player::Deactivate(void)
 void Player::NewGame(void)
 {
 	m_Rotation.Amount = 180;
+
 	Reset();
 	SetRotationPosition();
 	Activate();
+
 	p_HUD->NewGame();
 	p_HUD->Add(0);
-
-	m_ShipMesh->setColor(m_MeshColor);
-	//m_ShipWingMesh->setColor(m_MeshColor);
-	//m_FlameMesh->setColor(m_MeshColor);
 
 	UpdateLivesDisplay();
 }
@@ -198,26 +196,6 @@ void Player::Pause(bool paused)
 	}
 }
 
-bool Player::ShotActive(int shot)
-{
-	return p_Shots[shot]->m_Active;
-}
-
-Vector3 Player::Position(void)
-{
-	return m_Position;
-}
-
-Vector3 Player::ShotPosition(int shot)
-{
-	return p_Shots[shot]->m_Position;
-}
-
-SceneMesh *Player::ShotMesh(int shot)
-{
-	return p_Shots[shot]->m_ShotMesh;
-}
-
 void Player::Update(Number *elapsed)
 {
 	Location::Update(elapsed);
@@ -230,7 +208,7 @@ void Player::Update(Number *elapsed)
 		{
 			m_Spawn = true;
 
-			for (int i = 0; i < 6; i++)
+			for (int i = 0; i < 8; i++)
 				m_ShipExplosionMesh[i]->enabled = false;
 
 			if (m_GameOver)
@@ -492,15 +470,15 @@ void Player::ApplyThrust(void)
 
 void Player::StartExplode(void)
 {
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		p_ExpLoc[i]->m_Position = m_Position;
 		p_ExpLoc[i]->m_Rotation = m_Rotation;
-		p_ExpLoc[i]->m_Rotation.Velocity = Random::Number(1, 50);
+		p_ExpLoc[i]->m_Rotation.Velocity = Random::Number(10, 80);
 
 		Vector3 vel = 0;
 		float angle = Random::Number(0, PI * 2);
-		float speed = Random::Number(0.666, 1.666);
+		float speed = Random::Number(2.666, 12.666);
 		vel.x = cos(angle) * speed;
 		vel.y = sin(angle) * speed;
 
@@ -517,7 +495,7 @@ void Player::StartExplode(void)
 
 void Player::UpdateExplode(Number *elapsed)
 {
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		p_ExpLoc[i]->Update(elapsed);
 

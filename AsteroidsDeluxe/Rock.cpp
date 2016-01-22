@@ -110,7 +110,7 @@ void Rock::Update(Number *elapsed)
 
 		if (p_Player->m_Active && !p_Player->m_Hit)
 		{
-			if (CirclesIntersect(p_Player->Position(), p_Player->m_Radius))
+			if (CirclesIntersect(p_Player->m_Position, p_Player->m_Radius))
 			{
 				if (p_Player->m_ShieldOn)
 				{
@@ -143,11 +143,11 @@ void Rock::Update(Number *elapsed)
 
 		for (int i = 0; i < 4; i++)
 		{
-			if (p_Player->ShotActive(i))
+			if (p_Player->p_Shots[i]->m_Active)
 			{
-				if (CirclesIntersect(p_Player->ShotMesh(i)->getPosition(), p_Player->ShotRadius(i)))
+				if (CirclesIntersect(p_Player->p_Shots[i]->m_Position, p_Player->p_Shots[i]->m_Radius))
 				{
-					CollisionResult *rockVsPlayerShot = &p_Scene->testCollision(m_RockMesh, p_Player->ShotMesh(i));
+					CollisionResult *rockVsPlayerShot = &p_Scene->testCollision(m_RockMesh, p_Player->p_Shots[i]->m_ShotMesh);
 
 					if (rockVsPlayerShot->collided)
 					{
@@ -160,11 +160,11 @@ void Rock::Update(Number *elapsed)
 			}
 		}
 
-		if (p_UFO->Active())
+		if (p_UFO->p_UFO->m_Active)
 		{
-			if (CirclesIntersect(p_UFO->Position(), p_UFO->Radius()))
+			if (CirclesIntersect(p_UFO->p_UFO->m_Position, p_UFO->p_UFO->m_Radius))
 			{
-				CollisionResult *UFOVSRock = &p_Scene->testCollision(m_RockMesh, p_UFO->ShipBody());
+				CollisionResult *UFOVSRock = &p_Scene->testCollision(m_RockMesh, p_UFO->p_UFO->m_ShipMesh);
 
 				if (UFOVSRock->collided)
 				{
@@ -174,11 +174,11 @@ void Rock::Update(Number *elapsed)
 			}
 		}
 
-		if (p_UFO->ShotActive())
+		if (p_UFO->p_UFO->p_Shot->m_Active)
 		{
-			if (CirclesIntersect(p_UFO->ShotMesh()->getPosition(), p_UFO->ShotRadius()))
+			if (CirclesIntersect(p_UFO->p_UFO->p_Shot->m_Position, p_UFO->p_UFO->p_Shot->m_Radius))
 			{
-				CollisionResult *UFOVSRock = &p_Scene->testCollision(m_RockMesh, p_UFO->ShotMesh());
+				CollisionResult *UFOVSRock = &p_Scene->testCollision(m_RockMesh, p_UFO->p_UFO->p_Shot->m_ShotMesh);
 
 				if (UFOVSRock->collided)
 				{

@@ -32,19 +32,13 @@ public:
 	void Deactivate(void);
 	void NewGame(void);
 	void Reset(void);
-
-	bool ShotActive(int shot);
-
+	
 	bool m_Hit;
 	bool m_Spawn;
 	bool m_GameOver;
 	bool m_ShieldOn;
 
-	float ShotRadius(int shot);
-	Vector3 Position(void);
-	Vector3 ShotPosition(int shot);
-	SceneMesh *ShotMesh(int shot);
-
+	std::unique_ptr<Shot> p_Shots[4];
 	std::unique_ptr<HUD> p_HUD;
 	SceneMesh *m_ShipMesh;
 	SceneMesh *m_ShieldMesh;
@@ -72,12 +66,10 @@ private:
 	std::unique_ptr<Sound> p_ShotSound;
 	std::unique_ptr<Sound> p_ExplodeSound;
 	std::unique_ptr<Sound> p_ThrustSound;
-	std::unique_ptr<Shot> p_Shots[4];
-	std::unique_ptr<Location> p_ExpLoc[6];
+	std::unique_ptr<Location> p_ExpLoc[8];
 	std::vector<Entity*> p_ShipLives;
 
-
-	SceneMesh *m_ShipExplosionMesh[6];
+	SceneMesh *m_ShipExplosionMesh[8];
 	SceneMesh *m_ShipWingMesh;
 	SceneMesh *m_FlameMesh;
 

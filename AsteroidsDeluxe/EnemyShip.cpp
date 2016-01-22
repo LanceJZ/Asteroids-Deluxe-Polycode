@@ -2,10 +2,14 @@
 
 EnemyShip::EnemyShip()
 {
+	// When player explodes, heads off edge of screen. Pod spawns after player does.
+	// If rocks are cleared, the new wave of rocks wont spawn until all of these are destroyed or player dies.
+
 	m_Points = 200;
 	m_InPair = false;
 	m_Speed = 10;
 	m_Radius = 3;
+	m_Active = false;
 }
 
 void EnemyShip::Setup(std::shared_ptr<Player> player, std::shared_ptr<UFOControl> ufo)
@@ -20,7 +24,7 @@ void EnemyShip::Setup(std::shared_ptr<CollisionScene> scene)
 
 	//The left of screen, positive X is the direction for rotation zero.
 	//The top of the screen, positive Y is the direction for rotation zero.
-	// Enemy ship width is 24 pixels. Length 21 pixels. Back indent 6 pixels. 
+	//Enemy ship width is 24 pixels. Length 21 pixels. Back indent 6 pixels.
 
 	m_ShipMesh = new SceneMesh(Mesh::LINE_LOOP_MESH);
 
@@ -42,19 +46,21 @@ void EnemyShip::Update(Number * elapsed)
 {
 	Location::Update(elapsed);	
 
-	if (p_Player->m_Active)
-		m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
+	if (!m_NewWave)
+	{
+		if (p_Player->m_Active)
+			m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
 
-	float rad = (m_Rotation.Amount) * TORADIANS;
-
-	m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
+		float rad = (m_Rotation.Amount) * TORADIANS;
+		m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
+	}
 
 	SetRotationPosition();
 
-	CheckPlayerHit();
-
 	if (m_NewWave)
 	{
+		m_Rotation.Velocity = 0;
+
 		if (m_Position.x > m_WindowWidth || m_Position.x < -m_WindowWidth
 			|| m_Position.y > m_WindowHeight || m_Position.y < -m_WindowHeight)
 			Deactivate();
@@ -86,14 +92,8 @@ void EnemyShip::Deactivate(void)
 	m_Active = false;
 	m_Hit = false;
 	m_Done = false;
-}
-
-bool EnemyShip::PlayerNotClear(void)
-{
-	if (m_Active)
-		return CirclesIntersect(Vector3(0, 0, 0), 10);
-	else
-		return false;
+	p_Scene->removeCollision(m_ShipMesh);
+	p_Scene->removeEntity(m_ShipMesh);
 }
 
 void EnemyShip::Enable(void)
@@ -102,6 +102,7 @@ void EnemyShip::Enable(void)
 	m_Active = true;
 	m_ShieldHit = false;
 	m_NewWave = false;
+	p_Scene->addCollisionChild(m_ShipMesh, CollisionEntity::SHAPE_MESH);
 }
 
 void EnemyShip::SetRotationPosition(void)
@@ -114,7 +115,7 @@ void EnemyShip::CheckPlayerHit(void)
 {
 	if (p_Player->m_Active && !p_Player->m_Hit)
 	{
-		if (CirclesIntersect(p_Player->Position(), p_Player->m_Radius))
+		if (CirclesIntersect(p_Player->m_Position, p_Player->m_Radius))
 		{
 			if (p_Player->m_ShieldOn)
 			{

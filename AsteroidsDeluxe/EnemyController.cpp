@@ -22,9 +22,21 @@ void EnemyController::ResetTimer(void)
 	Timer::setTimerInterval(m_SpawnTimer);
 }
 
-void EnemyController::SpawnEnemyPod(void)
+void EnemyController::SpawnPod(void)
 {
 	p_Pod->Spawn();	
+}
+
+void EnemyController::SpawnPairs(void)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		p_Pair[i]->Spawn(p_Pod->p_Pairs[i]->m_Position, p_Pod->p_Pairs[i]->m_Rotation.Amount);
+	}
+}
+
+void EnemyController::SpawnShips(void)
+{
 }
 
 void EnemyController::Setup(std::shared_ptr<CollisionScene> scene, std::shared_ptr<Player> player, std::shared_ptr<UFOControl> ufo)
@@ -35,7 +47,12 @@ void EnemyController::Setup(std::shared_ptr<CollisionScene> scene, std::shared_p
 
 	ResetTimer();
 
-	p_Pod->Setup(scene);	
+	p_Pod->Setup(scene);
+
+	for (int i = 0; i < 3; i++)
+	{
+		p_Pod->p_Pairs[i]->Setup(player, ufo);
+	}
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -58,12 +75,19 @@ void EnemyController::Update(Number * elapsed)
 	{
 		p_Pod->Update(elapsed);
 		shipCount = 1;
+
+		if (p_Pod->m_Hit)
+		{
+			SpawnPairs();
+			p_Pod->Deactivate();
+			ResetTimer();
+		}
 	}
 	else if (m_SpawnOn && !m_NewWave)
 	{
-		if (Timer::elapsed > m_SpawnTimer && !p_Pod->m_Active)
+		if (Timer::elapsed > m_SpawnTimer && m_SpawnOn)
 		{
-			SpawnEnemyPod();
+			SpawnPod();
 			ResetTimer();
 			m_SpawnCounter++;
 			m_SpawnOn = false;
@@ -79,7 +103,6 @@ void EnemyController::Update(Number * elapsed)
 		}
 	}
 
-
 	for (int i = 0; i < 6; i++)
 	{
 		if (p_Ship[i]->m_Active)
@@ -91,6 +114,8 @@ void EnemyController::Update(Number * elapsed)
 
 	if (shipCount < 1)
 		m_SpawnOn = true;
+	else
+		m_SpawnOn = false;
 }
 
 void EnemyController::WaveNumber(int Wave)
@@ -122,60 +147,9 @@ void EnemyController::Pause(bool paused)
 	Timer::Pause(paused);
 }
 
-void EnemyController::HitRock(void)
-{
-	ResetTimer();
-	Deactivate();
-}
-
-void EnemyController::Deactivate(void)
-{
-}
-
 void EnemyController::NewGame(void)
 {
 	ResetTimer();
-	Deactivate();
 	m_SpawnCounter = 0;
 	m_Wave = 0;
-}
-
-SceneMesh * EnemyController::PodBody(void)
-{
-	return nullptr;
-}
-
-SceneMesh * EnemyController::PairBody(void)
-{
-	return nullptr;
-}
-
-SceneMesh * EnemyController::ShipBody(void)
-{
-	return nullptr;
-}
-
-Vector3 EnemyController::PositionPod(void)
-{
-	return Vector3();
-}
-
-Vector3 EnemyController::PositionPair(void)
-{
-	return Vector3();
-}
-
-Vector3 EnemyController::PositionShip(void)
-{
-	return Vector3();
-}
-
-bool EnemyController::Active(void)
-{
-	return false;
-}
-
-bool EnemyController::PlayerNotClear(void)
-{
-	return false;
 }

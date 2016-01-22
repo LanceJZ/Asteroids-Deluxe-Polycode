@@ -16,8 +16,8 @@ public:
 	void SetRotationPosition(void);
 	void Pause(bool paused);
 	void NewWave(bool activated);
+	void Enable(void);
 	void Deactivate(void);
-	bool PlayerNotClear(void);
 
 	bool m_Hit;
 	bool m_Done;
@@ -35,7 +35,6 @@ private:
 	float m_Speed;
 	int m_Points;
 
-	void Enable(void);
 	void CheckPlayerHit(void);
 };
 

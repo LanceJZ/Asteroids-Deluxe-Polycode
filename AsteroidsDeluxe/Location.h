@@ -1,7 +1,7 @@
 #pragma once
 #include <Polycode.h>
-#include "PolycodeView.h"
-#include "Polycode3DPhysics.h"
+#include <PolycodeView.h>
+#include <Polycode3DPhysics.h>
 
 struct Rotate
 {

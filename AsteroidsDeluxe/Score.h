@@ -1,6 +1,6 @@
 #pragma once
 #include <Polycode.h>
-#include "PolycodeView.h"
+#include <PolycodeView.h>
 
 class Score
 {

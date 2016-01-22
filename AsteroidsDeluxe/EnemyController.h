@@ -12,28 +12,16 @@ public:
 	void TimeToSpawn(bool activate);
 	void NewWave(bool activate);
 	void Pause(bool paused);
-	void HitRock(void);
-	void Deactivate(void);
 	void NewGame(void);
 
-	SceneMesh *PodBody(void);
-	SceneMesh *PairBody(void);
-	SceneMesh *ShipBody(void);
-
-	Vector3 PositionPod(void);
-	Vector3 PositionPair(void);
-	Vector3 PositionShip(void);
-
-	bool Active(void);
-	bool PlayerNotClear(void);
+	std::unique_ptr<EnemyPair> p_Pair[3];
+	std::unique_ptr<EnemyShip> p_Ship[6];
+	std::unique_ptr<EnemyPod> p_Pod;
 
 private:
 	std::shared_ptr<CollisionScene> p_Scene;
 	std::shared_ptr<Player> p_Player;
 	std::shared_ptr<UFOControl> p_UFO;
-	std::unique_ptr<EnemyPod> p_Pod;
-	std::unique_ptr<EnemyPair> p_Pair[3];
-	std::unique_ptr<EnemyShip> p_Ship[6];
 
 	bool m_SpawnOn;
 	bool m_NewWave;
@@ -43,5 +31,7 @@ private:
 	float m_SpawnTimer;
 
 	void ResetTimer(void);
-	void SpawnEnemyPod(void);
+	void SpawnPod(void);
+	void SpawnPairs(void);
+	void SpawnShips(void);
 };

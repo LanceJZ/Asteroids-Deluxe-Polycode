@@ -15,7 +15,7 @@ std::unique_ptr<Asteroids> pAsteroids;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	PolycodeView *view = new PolycodeView(hInstance, nCmdShow, L"Asteroids Deluxe Beta 1.00");
+	PolycodeView *view = new PolycodeView(hInstance, nCmdShow, L"Asteroids Deluxe Alpha 0.02"); //Next update, still in alpha.
 
 #if defined(_DEBUG)
 	pAsteroids = new Asteroids(view);

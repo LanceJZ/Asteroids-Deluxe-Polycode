@@ -2,10 +2,14 @@
 
 EnemyPair::EnemyPair()
 {
+	// When player explodes, heads off edge of screen. Pod spawns after player does.
+	// If rocks are cleared, the new wave of rocks wont spawn until all of these are destroyed or player dies.
+
 	m_Points = 100;
 	m_Speed = 10;
 	m_Radius = 6;
 	m_InPod = false;
+	m_Active = false;
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -34,25 +38,25 @@ void EnemyPair::Update(Number * elapsed)
 {
 	Location::Update(elapsed);
 
-	if (p_Player->m_Active)
-		m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
-
-	float rad = (m_Rotation.Amount) * TORADIANS;
-		
-	m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
-
-	SetRotationPosition();
-
-	CheckPlayerHit();
+	SetRotationPosition();	
 
 	if (m_NewWave)
 	{
+		m_Rotation.Velocity = 0;
+
 		if (m_Position.x > m_WindowWidth || m_Position.x < -m_WindowWidth
 			|| m_Position.y > m_WindowHeight || m_Position.y < -m_WindowHeight)
 			Deactivate();
 	}
 	else
+	{
+		if (p_Player->m_Active)
+			m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
+
+		float rad = (m_Rotation.Amount) * TORADIANS;
+		m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
 		CheckForEdge();
+	}
 }
 
 void EnemyPair::Spawn(Vector3 position, float rotation)
@@ -78,26 +82,18 @@ void EnemyPair::Deactivate(void)
 		p_Ships[i]->Deactivate();
 
 	m_Active = false;
-	m_Hit = false;
 	m_Done = false;
-}
-
-bool EnemyPair::PlayerNotClear(void)
-{
-	if (m_Active)
-		return CirclesIntersect(Vector3(0, 0, 0), 10);
-	else
-		return false;
 }
 
 void EnemyPair::Enable(void)
 {
 	for (int i = 0; i < 2; i++)
-		p_Ships[i]->m_ShipMesh->enabled = true;
+		p_Ships[i]->Enable();
 
 	m_Active = true;
 	m_ShieldHit = false;
 	m_NewWave = false;
+	m_Hit = false;
 }
 
 void EnemyPair::SetRotationPosition(void)
@@ -114,11 +110,11 @@ void EnemyPair::SetRotationPosition(void)
 		p_Ships[i]->SetRotationPosition();
 }
 
-void EnemyPair::CheckPlayerHit(void)
+bool EnemyPair::CheckPlayerHit(void)
 {
 	if (p_Player->m_Active && !p_Player->m_Hit)
 	{
-		if (CirclesIntersect(p_Player->Position(), p_Player->m_Radius))
+		if (CirclesIntersect(p_Player->m_Position, p_Player->m_Radius))
 		{
 			for (int i = 0; i < 2; i++)
 			{
@@ -143,12 +139,48 @@ void EnemyPair::CheckPlayerHit(void)
 
 					if (vsPlayer->collided)
 					{
+						if (!m_InPod)
+						{
+							p_Player->GotPoints(m_Points);
+							m_InPod = false;
+						}
+
 						p_Player->Hit();
-						p_Player->GotPoints(m_Points);
 						m_Hit = true;
 					}
 				}
+
 			}
 		}
 	}
+
+	for (int s = 0; s < 4; s++)
+	{
+		if (p_Player->p_Shots[s]->m_Active)
+		{
+			if (CirclesIntersect(p_Player->p_Shots[s]->m_Position, p_Player->p_Shots[s]->m_Radius))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					CollisionResult *vsPlayerShot = &p_Scene->testCollision(p_Ships[i]->m_ShipMesh, p_Player->p_Shots[s]->m_ShotMesh);
+
+					if (vsPlayerShot->collided)
+					{
+						if (!m_InPod)
+						{
+							p_Player->GotPoints(m_Points);
+							m_InPod = false;
+						}
+
+						m_Hit = true;
+						p_Player->DeactivateShot(i);
+						break;
+					}
+				}
+					
+			}
+		}
+	}
+
+	return m_Hit;
 }

@@ -78,7 +78,7 @@ void UFO::Update(Number * elapsed)
 
 	if (p_Player->m_Active && !p_Player->m_Hit)
 	{
-		if (CirclesIntersect(p_Player->Position(), p_Player->m_Radius))
+		if (CirclesIntersect(p_Player->m_Position, p_Player->m_Radius))
 		{
 			if (p_Player->m_ShieldOn)
 			{
@@ -114,11 +114,11 @@ void UFO::Update(Number * elapsed)
 
 	for (int i = 0; i < 4; i++)
 	{
-		if (p_Player->ShotActive(i))
+		if (p_Player->p_Shots[i]->m_Active)
 		{
-			if (CirclesIntersect(p_Player->ShotPosition(i), p_Player->ShotRadius(i)))
+			if (CirclesIntersect(p_Player->p_Shots[i]->m_Position, p_Player->p_Shots[i]->m_Radius))
 			{
-				CollisionResult *rockVsPlayerShot = &p_Scene->testCollision(m_ShipMesh, p_Player->ShotMesh(i));
+				CollisionResult *rockVsPlayerShot = &p_Scene->testCollision(m_ShipMesh, p_Player->p_Shots[i]->m_ShotMesh);
 
 				if (rockVsPlayerShot->collided)
 				{
@@ -152,7 +152,7 @@ void UFO::UpdateShot(Number * elapsed)
 
 	if (p_Player->m_Active && !p_Player->m_Hit)
 	{
-		if (p_Shot->CirclesIntersect(p_Player->Position(), p_Player->m_Radius))
+		if (p_Shot->CirclesIntersect(p_Player->m_Position, p_Player->m_Radius))
 		{
 			if (p_Player->m_ShieldOn)
 			{
@@ -270,32 +270,12 @@ void UFO::Pause(bool paused)
 	p_Shot->Pause(paused);
 }
 
-float UFO::ShotRadius(void)
-{
-	return p_Shot->m_Radius;
-}
-
-bool UFO::ShotActive(void)
-{
-	return p_Shot->m_Active;
-}
-
 bool UFO::PlayerNotClear(void)
 {
 	if (m_Active)
 		return CirclesIntersect(Vector3(0, 0, 0), 10);
 	else
 		return false;
-}
-
-void UFO::DeactivateShot(void)
-{
-	p_Shot->Deactivate();
-}
-
-SceneMesh * UFO::ShotMesh(void)
-{
-	return p_Shot->m_ShotMesh;
 }
 
 void UFO::Enable(void)
@@ -386,8 +366,8 @@ void UFO::FireShot(void)
 
 void UFO::FireAimedShot(void)
 {
-	FireShotAt(atan2(p_Player->Position().y - m_Position.y + Random::Number(0, 0.5) - Random::Number(0, 0.5),
-		p_Player->Position().x - m_Position.x + Random::Number(0, 0.5) - Random::Number(0, 0.5)));
+	FireShotAt(atan2(p_Player->m_Position.y - m_Position.y + Random::Number(0, 0.5) - Random::Number(0, 0.5),
+		p_Player->m_Position.x - m_Position.x + Random::Number(0, 0.5) - Random::Number(0, 0.5)));
 }
 
 void UFO::FireRandomShot(void)

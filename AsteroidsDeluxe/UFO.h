@@ -15,10 +15,10 @@ public:
 	void Spawn(int size);
 	void Pause(bool paused);
 	void Deactivate(void);
-	void DeactivateShot(void);
-	bool ShotActive(void);
 	bool PlayerNotClear(void);
-	float ShotRadius(void);
+
+	std::unique_ptr<Shot> p_Shot;
+	SceneMesh *m_ShipMesh;
 
 	bool m_Hit;
 	bool m_Done;
@@ -27,13 +27,9 @@ public:
 	int m_NumberOfShots;
 	int m_NumberOfShotsAtRocks;
 
-	SceneMesh *ShotMesh(void);
-	SceneMesh *m_ShipMesh;
-
 private:
 	std::shared_ptr<CollisionScene> p_Scene;
 	std::shared_ptr<Player> p_Player;
-	std::unique_ptr<Shot> p_Shot;
 	std::unique_ptr<Timer> p_FireTimer;
 	std::unique_ptr<Timer> p_VectorTimer;
 	std::unique_ptr<Sound> p_ShotSound;

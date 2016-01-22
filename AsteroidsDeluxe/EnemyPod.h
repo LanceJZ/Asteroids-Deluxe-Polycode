@@ -10,9 +10,11 @@ public:
 	void Update(Number *elapsed);
 	void Pause(bool paused);
 	void NewWave(bool activated);
-	void Spawn();
+	void Spawn(void);
 	void Deactivate(void);
 	bool PlayerNotClear(void);
+
+	std::unique_ptr<EnemyPair> p_Pairs[3];
 
 	bool m_Hit;
 	bool m_Done;
@@ -26,9 +28,8 @@ private:
 	int m_Points;
 	int m_Size;
 
-	std::unique_ptr<EnemyPair> p_Pairs[3];
-
 	void Enable(void);
 	void SetPosition(void);
+	void CheckPlayerHit(void);
 };
 
