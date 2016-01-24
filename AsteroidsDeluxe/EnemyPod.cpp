@@ -9,9 +9,9 @@ EnemyPod::EnemyPod()
 	m_Radius = 12;
 	m_Active = false;
 
-	for (int i = 0; i < 3; i++)
+	for (int pair = 0; pair < 3; pair++)
 	{
-		p_Pairs[i] = std::unique_ptr<EnemyPair>(new EnemyPair());
+		p_Pairs[pair] = std::unique_ptr<EnemyPair>(new EnemyPair());
 	}
 }
 
@@ -19,10 +19,10 @@ void EnemyPod::Setup(std::shared_ptr<CollisionScene> scene)
 {
 	p_Scene = scene;
 
-	for (int i = 0; i < 3; i++)
+	for (int pair = 0; pair < 3; pair++)
 	{
-		p_Pairs[i]->Setup(scene);
-		p_Pairs[i]->m_InPod = true;
+		p_Pairs[pair]->Setup(scene);
+		p_Pairs[pair]->m_InPod = true;
 	}
 
 	p_Pairs[0]->m_Rotation.Amount = m_Rotation.Amount = 90;
@@ -62,9 +62,9 @@ void EnemyPod::Spawn()
 	SetPosition();
 	Enable();
 
-	for (int i = 0; i < 3; i++)
+	for (int pair = 0; pair < 3; pair++)
 	{
-		p_Pairs[i]->Enable();
+		p_Pairs[pair]->Enable();
 	}
 
 	float rad = Random::Number(0, PI * 2);
@@ -87,14 +87,17 @@ void EnemyPod::SetPosition(void)
 	p_Pairs[1]->m_Position = Vector3(2.7, -1.5, 0) + m_Position;
 	p_Pairs[2]->m_Position = Vector3(2.7, -0.5, 0) + m_Position;
 
-	for (int i = 0; i < 3; i++)
-		p_Pairs[i]->SetRotationPosition();
+	for (int pair = 0; pair < 3; pair++)
+		p_Pairs[pair]->SetRotationPosition();
 }
 
 void EnemyPod::CheckPlayerHit(void)
 {
-	for (int i = 0; i < 3; i++)
-		m_Hit = p_Pairs[i]->CheckPlayerHit();
+	for (int pair = 0; pair < 3; pair++)
+	{
+		if (m_Hit = p_Pairs[pair]->CheckPlayerHit())
+			break;
+	}
 }
 
 void EnemyPod::Deactivate(void)
@@ -102,8 +105,8 @@ void EnemyPod::Deactivate(void)
 	m_Active = false;
 	m_Done = false;
 
-	for (int i = 0; i < 3; i++)
-		p_Pairs[i]->Deactivate();
+	for (int pair = 0; pair < 3; pair++)
+		p_Pairs[pair]->Deactivate();
 }
 
 bool EnemyPod::PlayerNotClear(void)

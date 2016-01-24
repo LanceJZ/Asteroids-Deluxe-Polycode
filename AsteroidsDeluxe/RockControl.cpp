@@ -31,12 +31,14 @@ void RockControl::Update(Number *elapsed)
 	RockCount rocksCounted = UpdateSmallRocks(elapsed, mRC.numberActive, mRC.playerAllClear);
 
 	if (!m_EnemySpawnOn)
-		if (lRC.numberActive < 1 && rocksCounted.numberActive < 6)
+	{
+		if (rocksCounted.numberActive < 4)
 		{
 			p_Enemy->TimeToSpawn(true);
 			p_Enemy->NewWave(false);
 			m_EnemySpawnOn = true;
 		}
+	}
 
 	if (p_Player->m_Hit && p_Player->m_Spawn)
 	{

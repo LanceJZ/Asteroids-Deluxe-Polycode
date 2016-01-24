@@ -33,5 +33,6 @@ private:
 	void ResetTimer(void);
 	void SpawnPod(void);
 	void SpawnPairs(void);
-	void SpawnShips(void);
+	void SpawnShips(int pair);
+	void CheckPlayerHit(void);
 };

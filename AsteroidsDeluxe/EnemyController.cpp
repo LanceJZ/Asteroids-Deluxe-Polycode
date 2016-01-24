@@ -2,15 +2,15 @@
 
 EnemyController::EnemyController() : Timer(false, 10000)
 {
-	m_SpawnTimerAmount = 60;
+	m_SpawnTimerAmount = 600;
 
 	p_Pod = std::unique_ptr<EnemyPod>(new EnemyPod());
 
-	for (int i = 0; i < 3; i++)
-		p_Pair[i] = std::unique_ptr<EnemyPair>(new EnemyPair());
+	for (int pair = 0; pair < 3; pair++)
+		p_Pair[pair] = std::unique_ptr<EnemyPair>(new EnemyPair());
 
-	for (int i = 0; i < 6; i++)
-		p_Ship[i] = std::unique_ptr<EnemyShip>(new EnemyShip());
+	for (int ship = 0; ship < 6; ship++)
+		p_Ship[ship] = std::unique_ptr<EnemyShip>(new EnemyShip());
 }
 
 void EnemyController::ResetTimer(void)
@@ -29,14 +29,38 @@ void EnemyController::SpawnPod(void)
 
 void EnemyController::SpawnPairs(void)
 {
-	for (int i = 0; i < 3; i++)
+	for (int pair = 0; pair < 3; pair++)
 	{
-		p_Pair[i]->Spawn(p_Pod->p_Pairs[i]->m_Position, p_Pod->p_Pairs[i]->m_Rotation.Amount);
+		p_Pair[pair]->Spawn(p_Pod->p_Pairs[pair]->m_Position, p_Pod->p_Pairs[pair]->m_Rotation.Amount);
 	}
 }
 
-void EnemyController::SpawnShips(void)
+void EnemyController::SpawnShips(int pair)
 {
+	int start = (1 * pair) + (1 * pair);
+
+	for (int ship = 0; ship < + 2; ship++)
+	{
+		p_Ship[ship + start]->Spawn(p_Pair[pair]->p_Ships[ship]->m_Position, p_Pair[pair]->p_Ships[ship]->m_Rotation.Amount);
+	}
+}
+
+void EnemyController::CheckPlayerHit(void)
+{
+	for (int pair = 0; pair < 3; pair++)
+	{
+		if (p_Pair[pair]->CheckPlayerHit() && p_Pair[pair]->m_Active)
+		{
+			SpawnShips(pair);
+			p_Pair[pair]->Deactivate();
+		}
+	}
+
+	if (p_Pod->m_Hit && p_Pod->m_Active)
+	{
+		SpawnPairs();
+		p_Pod->Deactivate();
+	}
 }
 
 void EnemyController::Setup(std::shared_ptr<CollisionScene> scene, std::shared_ptr<Player> player, std::shared_ptr<UFOControl> ufo)
@@ -49,21 +73,21 @@ void EnemyController::Setup(std::shared_ptr<CollisionScene> scene, std::shared_p
 
 	p_Pod->Setup(scene);
 
-	for (int i = 0; i < 3; i++)
+	for (int pair = 0; pair < 3; pair++)
 	{
-		p_Pod->p_Pairs[i]->Setup(player, ufo);
+		p_Pod->p_Pairs[pair]->Setup(player, ufo);
 	}
 
-	for (int i = 0; i < 3; i++)
+	for (int pair = 0; pair < 3; pair++)
 	{
-		p_Pair[i]->Setup(scene);
-		p_Pair[i]->Setup(player, ufo);
+		p_Pair[pair]->Setup(scene);
+		p_Pair[pair]->Setup(player, ufo);
 	}
 
-	for (int i = 0; i < 6; i++)
+	for (int ship = 0; ship < 6; ship++)
 	{
-		p_Ship[i]->Setup(scene);
-		p_Ship[i]->Setup(player, ufo);
+		p_Ship[ship]->Setup(scene);
+		p_Ship[ship]->Setup(player, ufo);
 	}
 }
 
@@ -75,13 +99,6 @@ void EnemyController::Update(Number * elapsed)
 	{
 		p_Pod->Update(elapsed);
 		shipCount = 1;
-
-		if (p_Pod->m_Hit)
-		{
-			SpawnPairs();
-			p_Pod->Deactivate();
-			ResetTimer();
-		}
 	}
 	else if (m_SpawnOn && !m_NewWave)
 	{
@@ -94,28 +111,34 @@ void EnemyController::Update(Number * elapsed)
 		}
 	}
 
-	for (int i = 0; i < 3; i++)
+	for (int pair = 0; pair < 3; pair++)
 	{
-		if (p_Pair[i]->m_Active)
+		if (p_Pair[pair]->m_Active)
 		{
-			p_Pair[i]->Update(elapsed);		
-			shipCount++; 
+			p_Pair[pair]->Update(elapsed);
+			shipCount++;
 		}
 	}
 
-	for (int i = 0; i < 6; i++)
+	for (int ship = 0; ship < 6; ship++)
 	{
-		if (p_Ship[i]->m_Active)
+		if (p_Ship[ship]->m_Active)
 		{
-			p_Ship[i]->Update(elapsed);
+			p_Ship[ship]->Update(elapsed);
 			shipCount++;
 		}
 	}
 
 	if (shipCount < 1)
+	{
 		m_SpawnOn = true;
+	}
 	else
+	{
 		m_SpawnOn = false;
+	}
+
+	CheckPlayerHit();
 }
 
 void EnemyController::WaveNumber(int Wave)
@@ -135,11 +158,11 @@ void EnemyController::NewWave(bool activate)
 	
 	p_Pod->NewWave(activate);
 
-	for (int i = 0; i < 3; i++)
-		p_Pair[i]->NewWave(activate);
+	for (int pair = 0; pair < 3; pair++)
+		p_Pair[pair]->NewWave(activate);
 
-	for (int i = 0; i < 6; i++)
-		p_Ship[i]->NewWave(activate);
+	for (int ship = 0; ship < 6; ship++)
+		p_Ship[ship]->NewWave(activate);
 }
 
 void EnemyController::Pause(bool paused)

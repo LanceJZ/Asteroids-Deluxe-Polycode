@@ -46,15 +46,6 @@ void EnemyShip::Update(Number * elapsed)
 {
 	Location::Update(elapsed);	
 
-	if (!m_NewWave)
-	{
-		if (p_Player->m_Active)
-			m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
-
-		float rad = (m_Rotation.Amount) * TORADIANS;
-		m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
-	}
-
 	SetRotationPosition();
 
 	if (m_NewWave)
@@ -66,7 +57,14 @@ void EnemyShip::Update(Number * elapsed)
 			Deactivate();
 	}
 	else
+	{
+		if (p_Player->m_Active)
+			m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
+
+		float rad = (m_Rotation.Amount) * TORADIANS;
+		m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
 		CheckForEdge();
+	}
 }
 
 void EnemyShip::Spawn(Vector3 position, float rotation)
@@ -111,7 +109,7 @@ void EnemyShip::SetRotationPosition(void)
 	m_ShipMesh->setRotationEuler(Vector3(0, 0, m_Rotation.Amount));
 }
 
-void EnemyShip::CheckPlayerHit(void)
+bool EnemyShip::CheckPlayerHit(void)
 {
 	if (p_Player->m_Active && !p_Player->m_Hit)
 	{
@@ -138,11 +136,36 @@ void EnemyShip::CheckPlayerHit(void)
 
 				if (vsPlayer->collided)
 				{
+					if (!m_InPair)
+						p_Player->GotPoints(m_Points);
+
 					p_Player->Hit();
-					p_Player->GotPoints(m_Points);
 					m_Hit = true;
 				}
 			}
 		}
 	}
+
+	for (int ps = 0; ps < 4; ps++)
+	{
+		if (p_Player->p_Shots[ps]->m_Active)
+		{
+			if (CirclesIntersect(p_Player->p_Shots[ps]->m_Position, p_Player->p_Shots[ps]->m_Radius))
+			{
+				CollisionResult *vsPlayerShot = &p_Scene->testCollision(m_ShipMesh, p_Player->p_Shots[ps]->m_ShotMesh);
+
+				if (vsPlayerShot->collided)
+				{
+					if (!m_InPair)
+						p_Player->GotPoints(m_Points);
+
+					m_Hit = true;
+					p_Player->DeactivateShot(ps);
+					break;
+				}
+			}
+		}
+	}
+
+	return m_Hit;
 }

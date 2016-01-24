@@ -11,9 +11,9 @@ EnemyPair::EnemyPair()
 	m_InPod = false;
 	m_Active = false;
 
-	for (int i = 0; i < 2; i++)
+	for (int ship = 0; ship < 2; ship++)
 	{
-		p_Ships[i] = std::unique_ptr<EnemyShip>(new EnemyShip());
+		p_Ships[ship] = std::unique_ptr<EnemyShip>(new EnemyShip());
 	}
 }
 
@@ -27,10 +27,10 @@ void EnemyPair::Setup(std::shared_ptr<CollisionScene> scene)
 {
 	p_Scene = scene;
 
-	for (int i = 0; i < 2; i++)
+	for (int ship = 0; ship < 2; ship++)
 	{
-		p_Ships[i]->Setup(scene);
-		p_Ships[i]->m_InPair = true;
+		p_Ships[ship]->Setup(scene);
+		p_Ships[ship]->m_InPair = true;
 	}
 }
 
@@ -78,8 +78,8 @@ void EnemyPair::NewWave(bool activated)
 
 void EnemyPair::Deactivate(void)
 {
-	for (int i = 0; i < 2; i++)
-		p_Ships[i]->Deactivate();
+	for (int ship = 0; ship < 2; ship++)
+		p_Ships[ship]->Deactivate();
 
 	m_Active = false;
 	m_Done = false;
@@ -87,8 +87,8 @@ void EnemyPair::Deactivate(void)
 
 void EnemyPair::Enable(void)
 {
-	for (int i = 0; i < 2; i++)
-		p_Ships[i]->Enable();
+	for (int ship = 0; ship < 2; ship++)
+		p_Ships[ship]->Enable();
 
 	m_Active = true;
 	m_ShieldHit = false;
@@ -106,8 +106,8 @@ void EnemyPair::SetRotationPosition(void)
 	p_Ships[0]->m_Rotation = m_Rotation;
 	p_Ships[1]->m_Rotation.Amount = m_Rotation.Amount - 180;
 
-	for (int i = 0; i < 2; i++)
-		p_Ships[i]->SetRotationPosition();
+	for (int ship = 0; ship < 2; ship++)
+		p_Ships[ship]->SetRotationPosition();
 }
 
 bool EnemyPair::CheckPlayerHit(void)
@@ -116,11 +116,11 @@ bool EnemyPair::CheckPlayerHit(void)
 	{
 		if (CirclesIntersect(p_Player->m_Position, p_Player->m_Radius))
 		{
-			for (int i = 0; i < 2; i++)
+			for (int ship = 0; ship < 2; ship++)
 			{
 				if (p_Player->m_ShieldOn)
 				{
-					CollisionResult *vsShield = &p_Scene->testCollision(p_Ships[i]->m_ShipMesh, p_Player->m_ShieldMesh);
+					CollisionResult *vsShield = &p_Scene->testCollision(p_Ships[ship]->m_ShipMesh, p_Player->m_ShieldMesh);
 
 					if (vsShield->collided)
 					{
@@ -135,15 +135,12 @@ bool EnemyPair::CheckPlayerHit(void)
 				}
 				else
 				{
-					CollisionResult *vsPlayer = &p_Scene->testCollision(p_Ships[i]->m_ShipMesh, p_Player->m_ShipMesh);
+					CollisionResult *vsPlayer = &p_Scene->testCollision(p_Ships[ship]->m_ShipMesh, p_Player->m_ShipMesh);
 
 					if (vsPlayer->collided)
 					{
 						if (!m_InPod)
-						{
 							p_Player->GotPoints(m_Points);
-							m_InPod = false;
-						}
 
 						p_Player->Hit();
 						m_Hit = true;
@@ -154,15 +151,15 @@ bool EnemyPair::CheckPlayerHit(void)
 		}
 	}
 
-	for (int s = 0; s < 4; s++)
+	for (int ps = 0; ps < 4; ps++)
 	{
-		if (p_Player->p_Shots[s]->m_Active)
+		if (p_Player->p_Shots[ps]->m_Active)
 		{
-			if (CirclesIntersect(p_Player->p_Shots[s]->m_Position, p_Player->p_Shots[s]->m_Radius))
+			if (CirclesIntersect(p_Player->p_Shots[ps]->m_Position, p_Player->p_Shots[ps]->m_Radius))
 			{
-				for (int i = 0; i < 2; i++)
+				for (int ship = 0; ship < 2; ship++)
 				{
-					CollisionResult *vsPlayerShot = &p_Scene->testCollision(p_Ships[i]->m_ShipMesh, p_Player->p_Shots[s]->m_ShotMesh);
+					CollisionResult *vsPlayerShot = &p_Scene->testCollision(p_Ships[ship]->m_ShipMesh, p_Player->p_Shots[ps]->m_ShotMesh);
 
 					if (vsPlayerShot->collided)
 					{
@@ -173,7 +170,7 @@ bool EnemyPair::CheckPlayerHit(void)
 						}
 
 						m_Hit = true;
-						p_Player->DeactivateShot(i);
+						p_Player->DeactivateShot(ps);
 						break;
 					}
 				}

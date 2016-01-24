@@ -18,6 +18,7 @@ public:
 	void NewWave(bool activated);
 	void Enable(void);
 	void Deactivate(void);
+	bool CheckPlayerHit(void);
 
 	bool m_Hit;
 	bool m_Done;
@@ -34,7 +35,5 @@ private:
 	bool m_NewWave;
 	float m_Speed;
 	int m_Points;
-
-	void CheckPlayerHit(void);
 };
 
