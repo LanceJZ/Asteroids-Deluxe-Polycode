@@ -21,7 +21,7 @@ public:
 private:
 	std::shared_ptr<CollisionScene> p_Scene;
 	std::shared_ptr<Player> p_Player;
-	std::shared_ptr<UFOControl> p_UFO;
+	std::shared_ptr<UFOControl> p_UFOs;
 
 	bool m_SpawnOn;
 	bool m_NewWave;

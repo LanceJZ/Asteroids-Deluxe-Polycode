@@ -10,19 +10,10 @@ public:
 	void Update(Number *elapsed);
 	void WaveNumber(int Wave);
 	void Pause(bool paused);
-	void HitRock(void);
+	void HitObject(void);
 	void Deactivate(void);
 	void DeactivateShot(void);
 	void NewGame(void);
-
-	//float ShotRadius(void);
-	//float Radius(void);
-	//SceneMesh *ShotMesh(void);
-	//SceneMesh *ShipBody(void);
-	//Vector3 Position(void);
-	//bool ShotActive(void);
-	//bool Active(void);
-	//bool PlayerNotClear(void);
 
 	std::unique_ptr<UFO> p_UFO;
 

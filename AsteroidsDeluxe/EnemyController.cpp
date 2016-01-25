@@ -2,7 +2,7 @@
 
 EnemyController::EnemyController() : Timer(false, 10000)
 {
-	m_SpawnTimerAmount = 600;
+	m_SpawnTimerAmount = 30000;
 
 	p_Pod = std::unique_ptr<EnemyPod>(new EnemyPod());
 
@@ -24,7 +24,7 @@ void EnemyController::ResetTimer(void)
 
 void EnemyController::SpawnPod(void)
 {
-	p_Pod->Spawn();	
+	p_Pod->Spawn();
 }
 
 void EnemyController::SpawnPairs(void)
@@ -47,19 +47,56 @@ void EnemyController::SpawnShips(int pair)
 
 void EnemyController::CheckPlayerHit(void)
 {
+	for (int ship = 0; ship < 6; ship++)
+	{
+		if (p_Ship[ship]->m_Active)
+		{
+			if (p_Ship[ship]->CheckPlayerHit())
+			{
+				p_Ship[ship]->Deactivate();
+				p_Player->GotPoints(200);
+			}
+
+			if (p_Ship[ship]->CheckUFOHit())
+				p_Ship[ship]->Deactivate();
+		}
+
+	}
+
+
 	for (int pair = 0; pair < 3; pair++)
 	{
-		if (p_Pair[pair]->CheckPlayerHit() && p_Pair[pair]->m_Active)
+		if (p_Pair[pair]->m_Active)
 		{
-			SpawnShips(pair);
-			p_Pair[pair]->Deactivate();
+			if (p_Pair[pair]->CheckPlayerHit())
+			{
+				SpawnShips(pair);
+				p_Pair[pair]->Deactivate();
+				p_Player->GotPoints(100);
+			}
+
+			if (p_Pair[pair]->CheckUFOHit())
+			{
+				SpawnShips(pair);
+				p_Pair[pair]->Deactivate();
+			}
 		}
 	}
 
-	if (p_Pod->m_Hit && p_Pod->m_Active)
+	if (p_Pod->m_Active)
 	{
-		SpawnPairs();
-		p_Pod->Deactivate();
+		if (p_Pod->CheckPlayerHit())
+		{
+			SpawnPairs();
+			p_Pod->Deactivate();
+			p_Player->GotPoints(50);
+		}
+
+		if (p_Pod->CheckUFOHit())
+		{
+			SpawnPairs();
+			p_Pod->Deactivate();
+		}
 	}
 }
 
@@ -67,7 +104,7 @@ void EnemyController::Setup(std::shared_ptr<CollisionScene> scene, std::shared_p
 {
 	p_Scene = scene;
 	p_Player = player;
-	p_UFO = ufo;
+	p_UFOs = ufo;
 
 	ResetTimer();
 
@@ -108,6 +145,7 @@ void EnemyController::Update(Number * elapsed)
 			ResetTimer();
 			m_SpawnCounter++;
 			m_SpawnOn = false;
+			shipCount = 1;
 		}
 	}
 
@@ -172,7 +210,23 @@ void EnemyController::Pause(bool paused)
 
 void EnemyController::NewGame(void)
 {
+	NewWave(true);
 	ResetTimer();
 	m_SpawnCounter = 0;
 	m_Wave = 0;
+
+	if (p_Pod->m_Active)
+		p_Pod->Deactivate();
+
+	for (int pair = 0; pair < 3; pair++)
+	{
+		if (p_Pair[pair]->m_Active)
+			p_Pair[pair]->Deactivate();
+	}
+
+	for (int ship = 0; ship < 6; ship++)
+	{
+		if (p_Ship[ship]->m_Active)
+			p_Ship[ship]->Deactivate();
+	}
 }

@@ -169,7 +169,8 @@ void Rock::Update(Number *elapsed)
 				if (UFOVSRock->collided)
 				{
 					m_Hit = true;
-					p_UFO->HitRock();
+					p_UFO->p_UFO->m_Hit = true;
+					p_UFO->p_UFO->ExplodeSound();
 				}
 			}
 		}

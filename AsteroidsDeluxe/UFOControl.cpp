@@ -69,41 +69,11 @@ void UFOControl::Pause(bool paused)
 	Timer::Pause(paused);
 }
 
-void UFOControl::HitRock(void)
+void UFOControl::HitObject(void)
 {
 	ResetTimer();
 	Deactivate();
 }
-
-//Vector3 UFOControl::Position(void)
-//{
-//	return p_UFO->m_Position;
-//}
-//
-//float UFOControl::ShotRadius(void)
-//{
-//	return p_UFO->ShotRadius();
-//}
-//
-//float UFOControl::Radius(void)
-//{
-//	return p_UFO->m_Radius;
-//}
-//
-//bool UFOControl::Active(void)
-//{
-//	return p_UFO->m_Active;
-//}
-//
-//bool UFOControl::PlayerNotClear(void)
-//{
-//	return p_UFO->PlayerNotClear();
-//}
-//
-//SceneMesh * UFOControl::ShipBody(void)
-//{
-//	return p_UFO->m_ShipMesh;
-//}
 
 void UFOControl::Deactivate(void)
 {
@@ -123,16 +93,6 @@ void UFOControl::NewGame(void)
 	m_SpawnCounter = 0;
 	m_Wave = 0;
 }
-
-//SceneMesh * UFOControl::ShotMesh(void)
-//{
-//	return p_UFO->ShotMesh();
-//}
-//
-//bool UFOControl::ShotActive(void)
-//{
-//	return p_UFO->ShotActive();
-//}
 
 void UFOControl::SpawnUFO()
 {

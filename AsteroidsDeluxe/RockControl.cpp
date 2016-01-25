@@ -9,7 +9,7 @@ void RockControl::Setup(std::shared_ptr<CollisionScene> scene, std::shared_ptr<P
 {
 	p_Scene = scene;
 	p_Player = player;
-	p_UFO = ufo;
+	p_UFOs = ufo;
 	p_Enemy = enemy;
 
 	NewGame();
@@ -39,10 +39,17 @@ void RockControl::Update(Number *elapsed)
 			m_EnemySpawnOn = true;
 		}
 	}
+	else if (rocksCounted.numberActive > 6)
+	{
+		p_Enemy->TimeToSpawn(false);
+		p_Enemy->NewWave(true);
+		m_EnemySpawnOn = false;
+
+	}
 
 	if (p_Player->m_Hit && p_Player->m_Spawn)
 	{
-		if (rocksCounted.playerAllClear && !p_UFO->p_UFO->p_Shot->m_Active && !p_UFO->p_UFO->PlayerNotClear())
+		if (rocksCounted.playerAllClear && !p_UFOs->p_UFO->p_Shot->m_Active && !p_UFOs->p_UFO->PlayerNotClear())
 		{
 			p_Player->SetClear();
 		}
@@ -71,7 +78,7 @@ void RockControl::Update(Number *elapsed)
 
 			m_Wave++;
 
-			p_UFO->WaveNumber(m_Wave);
+			p_UFOs->WaveNumber(m_Wave);
 
 			SpawnNewWave(m_NumberOfRocks);
 			m_NumberOfRocksHit = 0;
@@ -323,7 +330,7 @@ void RockControl::SpawnNewWave(int NumberOfRocks)
 		if (spawnnewrock)
 		{
 			p_LargeRocks.push_back(std::unique_ptr<Rock>(new Rock()));
-			p_LargeRocks[p_LargeRocks.size() - 1]->Setup(p_Scene, 0, p_Player, p_UFO);
+			p_LargeRocks[p_LargeRocks.size() - 1]->Setup(p_Scene, 0, p_Player, p_UFOs);
 			p_LargeRocks[p_LargeRocks.size() - 1]->Spawn();
 		}
 	}
@@ -348,7 +355,7 @@ void RockControl::SpawnMedRocks(Vector3 position)
 		if (spawnnewrock)
 		{
 			p_MedRocks.push_back(std::unique_ptr<Rock>(new Rock()));
-			p_MedRocks[p_MedRocks.size() - 1]->Setup(p_Scene, 1, p_Player, p_UFO);
+			p_MedRocks[p_MedRocks.size() - 1]->Setup(p_Scene, 1, p_Player, p_UFOs);
 			p_MedRocks[p_MedRocks.size() - 1]->Spawn(position);
 		}
 	}
@@ -373,7 +380,7 @@ void RockControl::SpawnSmallRocks(Vector3 position)
 		if (spawnnewrock)
 		{
 			p_SmallRocks.push_back(std::unique_ptr<Rock>(new Rock()));
-			p_SmallRocks[p_SmallRocks.size() - 1]->Setup(p_Scene, 2, p_Player, p_UFO);
+			p_SmallRocks[p_SmallRocks.size() - 1]->Setup(p_Scene, 2, p_Player, p_UFOs);
 			p_SmallRocks[p_SmallRocks.size() - 1]->Spawn(position);
 		}
 	}

@@ -101,9 +101,7 @@ void UFO::Update(Number * elapsed)
 
 				if (vsPlayer->collided)
 				{
-					if (p_ExplodeSound != NULL)
-						p_ExplodeSound->Play();
-
+					ExplodeSound();
 					p_Player->Hit();
 					p_Player->GotPoints(m_Points);
 					m_Hit = true;
@@ -122,9 +120,7 @@ void UFO::Update(Number * elapsed)
 
 				if (rockVsPlayerShot->collided)
 				{
-					if (p_ExplodeSound != NULL)
-						p_ExplodeSound->Play();
-
+					ExplodeSound();
 					p_Player->DeactivateShot(i);
 					p_Player->GotPoints(m_Points);
 					m_Hit = true;
@@ -181,6 +177,16 @@ void UFO::UpdateShot(Number * elapsed)
 			}
 		}
 	}
+}
+
+void UFO::EnemyPodLocation(Vector3 location)
+{
+	m_PodLocation = location;
+}
+
+void UFO::EnemyPodActive(bool active)
+{
+	m_PodActive = active;
 }
 
 void UFO::Spawn(int size)
@@ -339,7 +345,7 @@ void UFO::FireShot(void)
 {
 	if (!p_Shot->m_Active)
 	{
-		if (p_Player->m_Active)
+		if (p_Player->m_Active && !p_Player->m_Hit)
 		{
 			float var = m_NumberOfShots + 1;
 
@@ -357,6 +363,10 @@ void UFO::FireShot(void)
 				m_NumberOfShotsAtRocks++;
 			}
 		}
+		else if (m_PodActive)
+		{
+			FireAimedShot();
+		}
 		else
 		{
 			FireRandomShot();
@@ -366,8 +376,12 @@ void UFO::FireShot(void)
 
 void UFO::FireAimedShot(void)
 {
-	FireShotAt(atan2(p_Player->m_Position.y - m_Position.y + Random::Number(0, 0.5) - Random::Number(0, 0.5),
-		p_Player->m_Position.x - m_Position.x + Random::Number(0, 0.5) - Random::Number(0, 0.5)));
+	if (p_Player->m_Active && !p_Player->m_Hit)
+		FireShotAt(atan2(p_Player->m_Position.y - m_Position.y + Random::Number(0, 0.5) - Random::Number(0, 0.5),
+			p_Player->m_Position.x - m_Position.x + Random::Number(0, 0.5) - Random::Number(0, 0.5)));
+	else if (m_PodActive)
+		FireShotAt(atan2(m_PodLocation.y - m_Position.y, m_PodLocation.x - m_Position.x));
+
 }
 
 void UFO::FireRandomShot(void)
@@ -387,4 +401,10 @@ void UFO::Deactivate(void)
 
 	if (p_EngineSmallSound != NULL)
 		p_EngineSmallSound->Stop();
+}
+
+void UFO::ExplodeSound(void)
+{
+	if (p_ExplodeSound != NULL && !p_Player->m_GameOver)
+		p_ExplodeSound->Play();
 }

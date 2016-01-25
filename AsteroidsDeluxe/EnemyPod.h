@@ -13,6 +13,8 @@ public:
 	void Spawn(void);
 	void Deactivate(void);
 	bool PlayerNotClear(void);
+	bool CheckPlayerHit(void);
+	bool CheckUFOHit(void);
 
 	std::unique_ptr<EnemyPair> p_Pairs[3];
 
@@ -20,16 +22,11 @@ public:
 	bool m_Done;
 
 private:
-	std::shared_ptr<CollisionScene> p_Scene;
-
-	bool m_ShieldHit;
 	bool m_NewWave;
 	float m_Speed;
-	int m_Points;
 	int m_Size;
 
 	void Enable(void);
 	void SetPosition(void);
-	void CheckPlayerHit(void);
 };
 

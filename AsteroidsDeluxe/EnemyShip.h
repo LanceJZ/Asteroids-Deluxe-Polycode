@@ -1,10 +1,7 @@
 #pragma once
-#include "Location.h"
-#include "Player.h"
-#include "UFOControl.h"
-#include "PlayerChase.h"
+#include "EnemyShared.h"
 
-class EnemyShip : public Location, PlayerChase
+class EnemyShip : public EnemyShared
 {
 public:
 	EnemyShip(void);
@@ -15,25 +12,16 @@ public:
 	void Spawn(Vector3 position, float rotation);
 	void SetRotationPosition(void);
 	void Pause(bool paused);
-	void NewWave(bool activated);
 	void Enable(void);
 	void Deactivate(void);
 	bool CheckPlayerHit(void);
-
-	bool m_Hit;
-	bool m_Done;
-	bool m_InPair;
+	bool CheckUFOHit(void);
 
 	SceneMesh *m_ShipMesh;
 
 private:
 	std::shared_ptr<CollisionScene> p_Scene;
-	std::shared_ptr<Player> p_Player;
-	std::shared_ptr<UFOControl> p_UFO;
 
 	bool m_ShieldHit;
-	bool m_NewWave;
-	float m_Speed;
-	int m_Points;
 };
 

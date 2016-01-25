@@ -27,7 +27,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
@@ -76,7 +76,7 @@
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\PolycodeView;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include\freetype2;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\include\AL;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include\bullet;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\include\Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Polycode_New\include</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -89,7 +89,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>Polycode3DPhysics.lib;BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;winmm.lib;ws2_32.lib;opengl32.lib;glu32.lib;Polycore.lib;zlib.lib;freetype.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;OpenAL32.lib;kernel32.lib;physfs.lib;libpng15_static.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Core\Dependencies\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\lib;$(SolutionDir)..\Polycode\Release\Windows\Framework\Modules\Dependencies\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\Polycode_New\lib</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -99,6 +99,7 @@
     <ClCompile Include="Asteroids.cpp" />
     <ClCompile Include="Clear.cpp" />
     <ClCompile Include="Dot.cpp" />
+    <ClCompile Include="EnemyShared.cpp" />
     <ClCompile Include="EnemyShip.cpp" />
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="EnemyPair.cpp" />
@@ -120,6 +121,7 @@
     <ClInclude Include="Asteroids.h" />
     <ClInclude Include="Clear.h" />
     <ClInclude Include="Dot.h" />
+    <ClInclude Include="EnemyShared.h" />
     <ClInclude Include="EnemyShip.h" />
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="EnemyPair.h" />

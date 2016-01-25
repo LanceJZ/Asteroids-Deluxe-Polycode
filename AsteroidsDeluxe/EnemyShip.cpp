@@ -5,8 +5,6 @@ EnemyShip::EnemyShip()
 	// When player explodes, heads off edge of screen. Pod spawns after player does.
 	// If rocks are cleared, the new wave of rocks wont spawn until all of these are destroyed or player dies.
 
-	m_Points = 200;
-	m_InPair = false;
 	m_Speed = 10;
 	m_Radius = 3;
 	m_Active = false;
@@ -15,7 +13,7 @@ EnemyShip::EnemyShip()
 void EnemyShip::Setup(std::shared_ptr<Player> player, std::shared_ptr<UFOControl> ufo)
 {
 	p_Player = player;
-	p_UFO = ufo;
+	p_UFOs = ufo;
 }
 
 void EnemyShip::Setup(std::shared_ptr<CollisionScene> scene)
@@ -36,41 +34,22 @@ void EnemyShip::Setup(std::shared_ptr<CollisionScene> scene)
 	m_ShipMesh->cacheToVertexBuffer(true);
 	m_ShipMesh->setColor(0.7, 0.7, 0.9, 1.0);
 	m_ShipMesh->lineSmooth = true;
-
-	Deactivate();
-
-	p_Scene->addChild(m_ShipMesh);
 }
 
 void EnemyShip::Update(Number * elapsed)
 {
-	Location::Update(elapsed);	
+	EnemyShared::Update(elapsed);
+	Location::Update(elapsed);
 
 	SetRotationPosition();
 
-	if (m_NewWave)
-	{
-		m_Rotation.Velocity = 0;
-
-		if (m_Position.x > m_WindowWidth || m_Position.x < -m_WindowWidth
-			|| m_Position.y > m_WindowHeight || m_Position.y < -m_WindowHeight)
-			Deactivate();
-	}
-	else
-	{
-		if (p_Player->m_Active)
-			m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
-
-		float rad = (m_Rotation.Amount) * TORADIANS;
-		m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
-		CheckForEdge();
-	}
+	if (m_OffScreen)
+		Deactivate();
 }
 
 void EnemyShip::Spawn(Vector3 position, float rotation)
 {
-	m_Position = position;
-	m_Rotation.Amount = rotation;
+	EnemyShared::Spawn(position, rotation);
 	SetRotationPosition();
 	Enable();
 }
@@ -79,27 +58,20 @@ void EnemyShip::Pause(bool paused)
 {
 }
 
-void EnemyShip::NewWave(bool activated)
-{
-	m_NewWave = activated;
-}
-
 void EnemyShip::Deactivate(void)
 {
+	EnemyShared::Deactivate();
+
 	m_ShipMesh->enabled = false;
-	m_Active = false;
-	m_Hit = false;
-	m_Done = false;
 	p_Scene->removeCollision(m_ShipMesh);
 	p_Scene->removeEntity(m_ShipMesh);
 }
 
 void EnemyShip::Enable(void)
 {
+	EnemyShared::Enable();
+
 	m_ShipMesh->enabled = true;
-	m_Active = true;
-	m_ShieldHit = false;
-	m_NewWave = false;
 	p_Scene->addCollisionChild(m_ShipMesh, CollisionEntity::SHAPE_MESH);
 }
 
@@ -136,9 +108,6 @@ bool EnemyShip::CheckPlayerHit(void)
 
 				if (vsPlayer->collided)
 				{
-					if (!m_InPair)
-						p_Player->GotPoints(m_Points);
-
 					p_Player->Hit();
 					m_Hit = true;
 				}
@@ -156,13 +125,44 @@ bool EnemyShip::CheckPlayerHit(void)
 
 				if (vsPlayerShot->collided)
 				{
-					if (!m_InPair)
-						p_Player->GotPoints(m_Points);
-
 					m_Hit = true;
 					p_Player->DeactivateShot(ps);
 					break;
 				}
+			}
+		}
+	}
+
+	return m_Hit;
+}
+
+bool EnemyShip::CheckUFOHit(void)
+{
+	if (p_UFOs->p_UFO->m_Active)
+	{
+		if (CirclesIntersect(p_UFOs->p_UFO->m_Position, p_UFOs->p_UFO->m_Radius))
+		{
+			CollisionResult *vsUFOs = &p_Scene->testCollision(m_ShipMesh, p_UFOs->p_UFO->m_ShipMesh);
+
+			if (vsUFOs->collided)
+			{
+				m_Hit = true;				
+				p_UFOs->p_UFO->m_Hit = true;
+				p_UFOs->p_UFO->ExplodeSound();
+			}
+		}
+	}
+
+	if (p_UFOs->p_UFO->p_Shot->m_Active)
+	{
+		if (CirclesIntersect(p_UFOs->p_UFO->p_Shot->m_Position, p_UFOs->p_UFO->p_Shot->m_Radius))
+		{
+			CollisionResult *vsUFOShot = &p_Scene->testCollision(m_ShipMesh, p_UFOs->p_UFO->p_Shot->m_ShotMesh);
+
+			if (vsUFOShot->collided)
+			{
+				m_Hit = true;
+				p_UFOs->p_UFO->p_Shot->Deactivate();
 			}
 		}
 	}

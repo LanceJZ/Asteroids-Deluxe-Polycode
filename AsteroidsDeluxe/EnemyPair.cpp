@@ -5,10 +5,7 @@ EnemyPair::EnemyPair()
 	// When player explodes, heads off edge of screen. Pod spawns after player does.
 	// If rocks are cleared, the new wave of rocks wont spawn until all of these are destroyed or player dies.
 
-	m_Points = 100;
 	m_Speed = 10;
-	m_Radius = 6;
-	m_InPod = false;
 	m_Active = false;
 
 	for (int ship = 0; ship < 2; ship++)
@@ -20,49 +17,35 @@ EnemyPair::EnemyPair()
 void EnemyPair::Setup(std::shared_ptr<Player> player, std::shared_ptr<UFOControl> ufo)
 {
 	p_Player = player;
-	p_UFO = ufo;
+	p_UFOs = ufo;
+
+	for (int ship = 0; ship < 2; ship++)
+		p_Ships[ship]->Setup(player, ufo);
 }
 
 void EnemyPair::Setup(std::shared_ptr<CollisionScene> scene)
 {
-	p_Scene = scene;
-
 	for (int ship = 0; ship < 2; ship++)
 	{
 		p_Ships[ship]->Setup(scene);
-		p_Ships[ship]->m_InPair = true;
 	}
 }
 
 void EnemyPair::Update(Number * elapsed)
 {
+	EnemyShared::Update(elapsed);
 	Location::Update(elapsed);
 
-	SetRotationPosition();	
+	SetRotationPosition();
 
-	if (m_NewWave)
-	{
-		m_Rotation.Velocity = 0;
-
-		if (m_Position.x > m_WindowWidth || m_Position.x < -m_WindowWidth
-			|| m_Position.y > m_WindowHeight || m_Position.y < -m_WindowHeight)
-			Deactivate();
-	}
-	else
-	{
-		if (p_Player->m_Active)
-			m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
-
-		float rad = (m_Rotation.Amount) * TORADIANS;
-		m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
-		CheckForEdge();
-	}
+	if (m_OffScreen)
+		Deactivate();
 }
 
 void EnemyPair::Spawn(Vector3 position, float rotation)
 {
-	m_Position = position;
-	m_Rotation.Amount = rotation;
+	EnemyShared::Spawn(position, rotation);
+
 	SetRotationPosition();
 	Enable();
 }
@@ -71,29 +54,20 @@ void EnemyPair::Pause(bool paused)
 {
 }
 
-void EnemyPair::NewWave(bool activated)
-{
-	m_NewWave = activated;
-}
-
 void EnemyPair::Deactivate(void)
 {
+	EnemyShared::Deactivate();
+
 	for (int ship = 0; ship < 2; ship++)
 		p_Ships[ship]->Deactivate();
-
-	m_Active = false;
-	m_Done = false;
 }
 
 void EnemyPair::Enable(void)
 {
+	EnemyShared::Enable();
+
 	for (int ship = 0; ship < 2; ship++)
 		p_Ships[ship]->Enable();
-
-	m_Active = true;
-	m_ShieldHit = false;
-	m_NewWave = false;
-	m_Hit = false;
 }
 
 void EnemyPair::SetRotationPosition(void)
@@ -112,71 +86,21 @@ void EnemyPair::SetRotationPosition(void)
 
 bool EnemyPair::CheckPlayerHit(void)
 {
-	if (p_Player->m_Active && !p_Player->m_Hit)
+	for (int ship = 0; ship < 2; ship++)
 	{
-		if (CirclesIntersect(p_Player->m_Position, p_Player->m_Radius))
-		{
-			for (int ship = 0; ship < 2; ship++)
-			{
-				if (p_Player->m_ShieldOn)
-				{
-					CollisionResult *vsShield = &p_Scene->testCollision(p_Ships[ship]->m_ShipMesh, p_Player->m_ShieldMesh);
-
-					if (vsShield->collided)
-					{
-						if (!m_ShieldHit)
-						{
-							p_Player->ShieldHit(m_Velocity * 3, false);
-							m_ShieldHit = true;
-						}
-					}
-					else
-						m_ShieldHit = false;
-				}
-				else
-				{
-					CollisionResult *vsPlayer = &p_Scene->testCollision(p_Ships[ship]->m_ShipMesh, p_Player->m_ShipMesh);
-
-					if (vsPlayer->collided)
-					{
-						if (!m_InPod)
-							p_Player->GotPoints(m_Points);
-
-						p_Player->Hit();
-						m_Hit = true;
-					}
-				}
-
-			}
-		}
+		if (m_Hit = p_Ships[ship]->CheckPlayerHit())
+			break;
 	}
 
-	for (int ps = 0; ps < 4; ps++)
+	return m_Hit;
+}
+
+bool EnemyPair::CheckUFOHit(void)
+{
+	for (int ship = 0; ship < 2; ship++)
 	{
-		if (p_Player->p_Shots[ps]->m_Active)
-		{
-			if (CirclesIntersect(p_Player->p_Shots[ps]->m_Position, p_Player->p_Shots[ps]->m_Radius))
-			{
-				for (int ship = 0; ship < 2; ship++)
-				{
-					CollisionResult *vsPlayerShot = &p_Scene->testCollision(p_Ships[ship]->m_ShipMesh, p_Player->p_Shots[ps]->m_ShotMesh);
-
-					if (vsPlayerShot->collided)
-					{
-						if (!m_InPod)
-						{
-							p_Player->GotPoints(m_Points);
-							m_InPod = false;
-						}
-
-						m_Hit = true;
-						p_Player->DeactivateShot(ps);
-						break;
-					}
-				}
-					
-			}
-		}
+		if (m_Hit = p_Ships[ship]->CheckUFOHit())
+			break;
 	}
 
 	return m_Hit;

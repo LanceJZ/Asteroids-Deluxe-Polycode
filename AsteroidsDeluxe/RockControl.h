@@ -32,7 +32,7 @@ private:
 	int m_Wave;
 
 	std::shared_ptr<Player> p_Player;
-	std::shared_ptr<UFOControl> p_UFO;
+	std::shared_ptr<UFOControl> p_UFOs;
 	std::shared_ptr<EnemyController> p_Enemy;
 
 	std::vector<std::unique_ptr<Explosion>> p_Explosions;

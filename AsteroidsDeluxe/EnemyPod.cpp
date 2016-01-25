@@ -4,9 +4,7 @@ EnemyPod::EnemyPod()
 {
 	// When player explodes, stays on screen, like a rock, leaves off edge of screen.
 
-	m_Points = 50;
 	m_Speed = 10;
-	m_Radius = 12;
 	m_Active = false;
 
 	for (int pair = 0; pair < 3; pair++)
@@ -17,12 +15,9 @@ EnemyPod::EnemyPod()
 
 void EnemyPod::Setup(std::shared_ptr<CollisionScene> scene)
 {
-	p_Scene = scene;
-
 	for (int pair = 0; pair < 3; pair++)
 	{
 		p_Pairs[pair]->Setup(scene);
-		p_Pairs[pair]->m_InPod = true;
 	}
 
 	p_Pairs[0]->m_Rotation.Amount = m_Rotation.Amount = 90;
@@ -67,7 +62,7 @@ void EnemyPod::Spawn()
 		p_Pairs[pair]->Enable();
 	}
 
-	float rad = Random::Number(0, PI * 2);
+	float rad = Random::Number(0.075, (PI * 2) - 0.75);
 	float speed = 3;
 
 	m_Velocity = Vector3(cos(rad) * speed, sin(rad) * speed, 0);
@@ -76,7 +71,6 @@ void EnemyPod::Spawn()
 void EnemyPod::Enable(void)
 {
 	m_Active = true;
-	m_ShieldHit = false;
 	m_NewWave = false;
 	m_Hit = false;
 }
@@ -91,13 +85,26 @@ void EnemyPod::SetPosition(void)
 		p_Pairs[pair]->SetRotationPosition();
 }
 
-void EnemyPod::CheckPlayerHit(void)
+bool EnemyPod::CheckPlayerHit(void)
 {
 	for (int pair = 0; pair < 3; pair++)
 	{
 		if (m_Hit = p_Pairs[pair]->CheckPlayerHit())
 			break;
 	}
+
+	return m_Hit;
+}
+
+bool EnemyPod::CheckUFOHit(void)
+{
+	for (int pair = 0; pair < 3; pair++)
+	{
+		if (m_Hit = p_Pairs[pair]->CheckUFOHit())
+			break;
+	}
+
+	return m_Hit;
 }
 
 void EnemyPod::Deactivate(void)

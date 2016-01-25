@@ -12,9 +12,12 @@ public:
 	void Setup(std::shared_ptr<CollisionScene> scene, std::shared_ptr<Player> player);
 	void Update(Number *elapsed);
 	void UpdateShot(Number *elapsed);
+	void EnemyPodLocation(Vector3 location);
+	void EnemyPodActive(bool active);
 	void Spawn(int size);
 	void Pause(bool paused);
 	void Deactivate(void);
+	void ExplodeSound(void);
 	bool PlayerNotClear(void);
 
 	std::unique_ptr<Shot> p_Shot;
@@ -40,9 +43,11 @@ private:
 	bool m_FromRight;
 	bool m_ShieldHit;
 	bool m_ShotHitShield;
+	bool m_PodActive;
 	float m_FireTimerAmount;
 	float m_VectorTimerAmount;
 	float m_Speed;
+	Vector3 m_PodLocation;
 
 	void Enable(void);
 	void ResetFireTimer(void);

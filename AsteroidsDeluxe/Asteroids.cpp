@@ -56,6 +56,7 @@ void Asteroids::handleEvent(Event *event)
 					p_Player->NewGame();
 					p_UFOs->NewGame();
 					p_Rocks->NewGame();
+					p_Enemy->NewGame();
 				}
 
 				if (p_Player->p_HUD->m_NewHighScore)
@@ -82,6 +83,7 @@ void Asteroids::handleEvent(Event *event)
 					p_UFOs->Pause(m_Paused);
 					p_Rocks->Pause(m_Paused);
 					p_Player->Pause(m_Paused);
+					p_Enemy->Pause(m_Paused);
 				}
 			}
 		}
@@ -170,6 +172,9 @@ bool Asteroids::Update()
 		p_Rocks->Update(&frameelapsed);
 		p_UFOs->Update(&frameelapsed);
 		p_Enemy->Update(&frameelapsed);
+
+		p_UFOs->p_UFO->EnemyPodActive(p_Enemy->p_Pod->m_Active);
+		p_UFOs->p_UFO->EnemyPodLocation(p_Enemy->p_Pod->m_Position);
 	}
 
 	if (m_Exit)
