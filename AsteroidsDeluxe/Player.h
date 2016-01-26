@@ -66,6 +66,8 @@ private:
 	std::unique_ptr<Sound> p_ShotSound;
 	std::unique_ptr<Sound> p_ExplodeSound;
 	std::unique_ptr<Sound> p_ThrustSound;
+	std::unique_ptr<Sound> p_SpawnSound;
+	std::unique_ptr<Sound> p_ShieldSound;
 	std::unique_ptr<Location> p_ExpLoc[8];
 	std::vector<Entity*> p_ShipLives;
 

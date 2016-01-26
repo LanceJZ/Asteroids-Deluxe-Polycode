@@ -1,5 +1,6 @@
 #pragma once
 #include "EnemyPod.h"
+#include "Explosion.h"
 
 class EnemyController : public Timer
 {
@@ -19,9 +20,12 @@ public:
 	std::unique_ptr<EnemyPod> p_Pod;
 
 private:
+	std::unique_ptr<Sound> p_SpawnSound;
+	std::unique_ptr<Sound> p_ExplosionSound;
 	std::shared_ptr<CollisionScene> p_Scene;
 	std::shared_ptr<Player> p_Player;
 	std::shared_ptr<UFOControl> p_UFOs;
+	std::vector<std::unique_ptr<Explosion>> p_Explosions;
 
 	bool m_SpawnOn;
 	bool m_NewWave;
@@ -35,4 +39,5 @@ private:
 	void SpawnPairs(void);
 	void SpawnShips(int pair);
 	void CheckPlayerHit(void);
+	void SpawnExplosion(Vector3 position, float size);
 };

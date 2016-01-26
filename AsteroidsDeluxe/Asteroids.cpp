@@ -93,19 +93,19 @@ void Asteroids::handleEvent(Event *event)
 void Asteroids::handlePlayerInput(void)
 {
 	//Main keys.
-	bool key_up = pCore->getInput()->getKeyState(KEY_UP);
+	bool key_thrust = pCore->getInput()->getKeyState(KEY_UP);
 	bool key_left = pCore->getInput()->getKeyState(KEY_LEFT);
 	bool key_right = pCore->getInput()->getKeyState(KEY_RIGHT);
-	bool key_lctrl = pCore->getInput()->getKeyState(KEY_LCTRL);
-	bool key_lalt = pCore->getInput()->getKeyState(KEY_LALT);
+	bool key_fire = pCore->getInput()->getKeyState(KEY_LCTRL);
+	bool key_shield = pCore->getInput()->getKeyState(KEY_DOWN);
 	//Alternative keys.
-	bool key_w = pCore->getInput()->getKeyState(KEY_w);
-	bool key_a = pCore->getInput()->getKeyState(KEY_a);
-	bool key_d = pCore->getInput()->getKeyState(KEY_d);
-	bool key_space = pCore->getInput()->getKeyState(KEY_SPACE);
-	bool key_lshift = pCore->getInput()->getKeyState(KEY_LSHIFT);
+	bool key_thrustalt = pCore->getInput()->getKeyState(KEY_w);
+	bool key_leftalt = pCore->getInput()->getKeyState(KEY_a);
+	bool key_rightalt = pCore->getInput()->getKeyState(KEY_d);
+	bool key_firealt = pCore->getInput()->getKeyState(KEY_SPACE);
+	bool key_shieldalt = pCore->getInput()->getKeyState(KEY_s);
 
-	if (key_up || key_w)
+	if (key_thrust || key_thrustalt)
 	{
 		p_Player->ThrustOn();
 	}
@@ -114,7 +114,7 @@ void Asteroids::handlePlayerInput(void)
 		p_Player->ThrustOff();
 	}
 
-	if (key_lshift || key_lalt)
+	if (key_shieldalt || key_shield)
 	{
 		p_Player->ShieldOn();
 	}
@@ -123,12 +123,12 @@ void Asteroids::handlePlayerInput(void)
 		p_Player->ShieldOff();
 	}
 	
-	if (key_left || key_a || key_right || key_d)
+	if (key_left || key_leftalt || key_right || key_rightalt)
 	{
-		if (key_left || key_a)
+		if (key_left || key_leftalt)
 			p_Player->TurnLeft();
 
-		if (key_right || key_d)
+		if (key_right || key_rightalt)
 			p_Player->TurnRight();
 	}
 	else
@@ -136,7 +136,7 @@ void Asteroids::handlePlayerInput(void)
 		p_Player->TurnOff();
 	}
 
-	if (key_lctrl || key_space)
+	if (key_fire || key_firealt)
 	{
 		if (!m_FiredShot)
 		{

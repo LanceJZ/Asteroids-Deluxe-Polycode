@@ -11,6 +11,11 @@ EnemyController::EnemyController() : Timer(false, 10000)
 
 	for (int ship = 0; ship < 6; ship++)
 		p_Ship[ship] = std::unique_ptr<EnemyShip>(new EnemyShip());
+
+	p_SpawnSound = std::unique_ptr<Sound>(new Sound("audio/PodSpawn.wav"));
+	p_ExplosionSound = std::unique_ptr<Sound>(new Sound("audio/PodExplosion.wav"));
+	p_ExplosionSound->setVolume(0.1);
+	p_SpawnSound->setVolume(0.25);
 }
 
 void EnemyController::ResetTimer(void)
@@ -24,6 +29,9 @@ void EnemyController::ResetTimer(void)
 
 void EnemyController::SpawnPod(void)
 {
+	if (p_SpawnSound != NULL && !p_Player->m_GameOver)
+		p_SpawnSound->Play();
+
 	p_Pod->Spawn();
 }
 
@@ -51,14 +59,14 @@ void EnemyController::CheckPlayerHit(void)
 	{
 		if (p_Ship[ship]->m_Active)
 		{
-			if (p_Ship[ship]->CheckPlayerHit())
+			if (p_Ship[ship]->CheckPlayerHit() || p_Ship[ship]->CheckUFOHit())
 			{
+				SpawnExplosion(p_Ship[ship]->m_Position, 1);
 				p_Ship[ship]->Deactivate();
-				p_Player->GotPoints(200);
 			}
 
-			if (p_Ship[ship]->CheckUFOHit())
-				p_Ship[ship]->Deactivate();
+			if (p_Ship[ship]->CheckPlayerHit())
+				p_Player->GotPoints(200);
 		}
 
 	}
@@ -68,35 +76,54 @@ void EnemyController::CheckPlayerHit(void)
 	{
 		if (p_Pair[pair]->m_Active)
 		{
-			if (p_Pair[pair]->CheckPlayerHit())
+			if (p_Pair[pair]->CheckPlayerHit() || p_Pair[pair]->CheckUFOHit())
 			{
+				SpawnExplosion(p_Pair[pair]->m_Position, 2);
 				SpawnShips(pair);
 				p_Pair[pair]->Deactivate();
-				p_Player->GotPoints(100);
 			}
 
-			if (p_Pair[pair]->CheckUFOHit())
-			{
-				SpawnShips(pair);
-				p_Pair[pair]->Deactivate();
-			}
+			if (p_Pair[pair]->CheckPlayerHit())
+				p_Player->GotPoints(100);
 		}
 	}
 
 	if (p_Pod->m_Active)
 	{
-		if (p_Pod->CheckPlayerHit())
+		if (p_Pod->CheckPlayerHit() || p_Pod->CheckUFOHit())
 		{
+			SpawnExplosion(p_Pod->m_Position, 3);
 			SpawnPairs();
 			p_Pod->Deactivate();
-			p_Player->GotPoints(50);
 		}
 
-		if (p_Pod->CheckUFOHit())
+		if (p_Pod->CheckPlayerHit())
+			p_Player->GotPoints(50);
+	}
+}
+
+void EnemyController::SpawnExplosion(Vector3 position, float size)
+{
+	if (p_ExplosionSound != NULL && !p_Player->m_GameOver)
+		p_ExplosionSound->Play();
+
+	bool spawnExp = true;
+
+	for (int expCheck = 0; expCheck < p_Explosions.size(); expCheck++)
+	{
+		if (!p_Explosions[expCheck]->m_Active)
 		{
-			SpawnPairs();
-			p_Pod->Deactivate();
+			spawnExp = false;
+			p_Explosions[expCheck]->Activate(position, size);
+			break;
 		}
+	}
+
+	if (spawnExp)
+	{
+		p_Explosions.push_back(std::unique_ptr<Explosion>(new Explosion()));
+		p_Explosions[p_Explosions.size() - 1]->Setup(p_Scene);
+		p_Explosions[p_Explosions.size() - 1]->Activate(position, size);
 	}
 }
 
@@ -177,6 +204,14 @@ void EnemyController::Update(Number * elapsed)
 	}
 
 	CheckPlayerHit();
+
+	for (int exp = 0; exp < p_Explosions.size(); exp++)
+	{
+		if (p_Explosions[exp]->m_Active)
+		{
+			p_Explosions[exp]->Update(elapsed);
+		}
+	}
 }
 
 void EnemyController::WaveNumber(int Wave)

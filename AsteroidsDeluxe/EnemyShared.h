@@ -23,7 +23,9 @@ protected:
 	std::shared_ptr<UFOControl> p_UFOs;
 	bool m_NewWave;
 	float m_Speed;
-	bool m_Done;
 	bool m_OffScreen;
+	bool m_Done;
+	bool m_UFO;
+	bool m_Player;
 };
 

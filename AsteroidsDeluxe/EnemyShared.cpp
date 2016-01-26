@@ -16,12 +16,37 @@ void EnemyShared::Update(Number * elapsed)
 	}
 	else
 	{
-		if (!p_Player->m_Hit && p_Player->m_Active)
-			m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
-		else if (p_UFOs->p_UFO->m_Active)
-			m_Rotation.Velocity = AimAtTarget(m_Position, p_UFOs->p_UFO->m_Position, m_Rotation.Amount);
-		else
+		if (p_Player->m_Active)
+		{
+			if (!p_Player->m_Hit && !m_UFO)
+				m_Player = true;
+		}
+		else if (!p_UFOs->p_UFO->m_Active)
 			m_Done = true;
+			
+		if (p_UFOs->p_UFO->m_Active)
+		{
+			if (p_Player->m_Hit || !p_Player->m_Active)
+			{
+				m_UFO = true;
+				m_Player = false;
+			}
+		}
+		else if (p_Player->m_Hit)
+			m_Done = true;
+
+		if (!p_Player->m_Active && !p_UFOs->p_UFO->m_Active)
+			m_Done = true;
+
+		if (m_Player)
+		{
+			m_Rotation.Velocity = AimAtTarget(m_Position, p_Player->m_Position, m_Rotation.Amount);
+		}
+
+		if (m_UFO)
+		{
+			m_Rotation.Velocity = AimAtTarget(m_Position, p_UFOs->p_UFO->m_Position, m_Rotation.Amount);
+		}
 
 		float rad = (m_Rotation.Amount) * TORADIANS;
 		m_Velocity = Vector3(cos(rad) * m_Speed, sin(rad) * m_Speed, 0);
@@ -51,6 +76,8 @@ void EnemyShared::Enable(void)
 	m_Done = false;
 	m_Hit = false;
 	m_OffScreen = false;
+	m_Player = false;
+	m_UFO = false;
 }
 
 void EnemyShared::Deactivate(void)

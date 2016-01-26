@@ -141,6 +141,10 @@ void Player::Setup(std::shared_ptr<CollisionScene> scene)
 	p_ThrustSound = std::unique_ptr<Sound>(new Sound("audio/Thrust.ogg"));
 	p_ThrustSound->setVolume(0.5);
 	p_ThrustSound->setPitch(0.75);
+	p_SpawnSound = std::unique_ptr<Sound>(new Sound("audio/PlayerStart.wav"));
+	p_SpawnSound->setVolume(0.1);
+	p_ShieldSound = std::unique_ptr<Sound>(new Sound("audio/Shield.wav"));
+	p_ShieldSound->setVolume(0.75);
 }
 
 void Player::Activate(void)
@@ -180,7 +184,11 @@ void Player::Reset(void)
 	m_Acceleration = Vector3(0, 0, 0);
 	m_ShipMesh->enabled = true;
 	m_ShieldMesh->enabled = false;
-	m_ShieldPower = 170;
+	m_ShieldPower = 100;
+	m_ShieldOn = false;
+
+	if (p_SpawnSound != NULL)
+		p_SpawnSound->Play();
 }
 
 void Player::DeactivateShot(int shot)
@@ -256,13 +264,37 @@ void Player::Update(Number *elapsed)
 			{
 				m_ShieldPower += -1 * *elapsed;
 
-				if (m_ShieldPower > 10)
-					m_ShieldMesh->setColor(m_MeshColor + Color(0.0, 0.0, 0.0, (m_ShieldPower - 10) * .01));
+				if (m_ShieldPower > 1)
+				{
+					m_ShieldMesh->setColor(Color(0.7, 0.7, 1.0, (m_ShieldPower - 1.0) * 0.01));
+					m_ShieldOn = true;
+					m_ShieldMesh->enabled = true;
+
+					if (p_ShieldSound != NULL)
+					{
+						if (!m_GameOver && !m_Hit)
+							if (!p_ShieldSound->isPlaying())
+								p_ShieldSound->Play(true);
+					}
+				}
 			}
 			else
 			{
-				m_ShieldOn = false;
-				m_ShieldMesh->enabled = false;
+				ShieldOff();
+			}
+		}
+		else
+		{
+			if (m_ShieldPower < 100)
+			{
+				m_ShieldPower += 10 * *elapsed; //Shield recharge when not in use.
+			}
+			else if (m_ShieldPower > 100)
+				m_ShieldPower = 100;
+
+			if (p_ShieldSound != NULL)
+			{
+				p_ShieldSound->Stop();
 			}
 		}
 	}
@@ -330,6 +362,11 @@ void Player::Hit(void)
 			p_ThrustSound->Stop();
 		}
 
+		if (p_ShieldSound != NULL)
+		{
+			p_ShieldSound->Stop();
+		}
+
 		p_ExplodeSound->Play();
 		p_HUD->LostLife();
 		m_Hit = true;
@@ -352,12 +389,15 @@ void Player::Hit(void)
 
 void Player::ShieldHit(Vector3 velocity, bool shot)
 {
-	m_ShieldPower -= 60;
+	m_ShieldPower -= 30;
 
 	if (shot)
-		m_ShieldPower -= 60;
+		m_ShieldPower -= 10;
 	else
 		m_Velocity += velocity * 1.5 + (m_Velocity * 1.5) * -1;
+
+	if (m_ShieldPower < 0)
+		m_ShieldPower = 0;
 }
 
 void Player::UpdateLivesDisplay(void)
@@ -419,13 +459,7 @@ void Player::ThrustOff(void)
 void Player::ShieldOn(void)
 {
 	if (!m_Hit && !m_GameOver)
-	{
-		if (m_ShieldPower > 0 && !m_ShieldOn)
-		{
-			m_ShieldMesh->enabled = true;
-			m_ShieldOn = true;
-		}
-	}
+		m_ShieldOn = true;
 	else
 		ShieldOff();
 }
@@ -434,6 +468,11 @@ void Player::ShieldOff(void)
 {
 	m_ShieldMesh->enabled = false;
 	m_ShieldOn = false;
+
+	if (p_ShieldSound != NULL)
+	{
+		p_ShieldSound->Stop();
+	}
 }
 
 void Player::ApplyThrust(void)

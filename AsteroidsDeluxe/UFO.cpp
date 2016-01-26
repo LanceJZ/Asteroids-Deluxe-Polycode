@@ -140,6 +140,20 @@ void UFO::Update(Number * elapsed)
 		ChangeVector();
 	}
 
+	if (p_Player->m_GameOver)
+	{
+		if (p_EngineLargeSound != NULL)
+		{
+			if (p_EngineLargeSound->isPlaying());
+				p_EngineLargeSound->Stop();
+		}
+
+		if (p_EngineSmallSound != NULL)
+		{
+			if (p_EngineSmallSound->isPlaying());
+				p_EngineSmallSound->Stop();
+		}
+	}
 }
 
 void UFO::UpdateShot(Number * elapsed)
@@ -363,24 +377,29 @@ void UFO::FireShot(void)
 				m_NumberOfShotsAtRocks++;
 			}
 		}
-		else if (m_PodActive)
-		{
-			FireAimedShot();
-		}
 		else
 		{
-			FireRandomShot();
+			if (m_PodActive && Random::Number(0, 10) < 7)
+			{
+				FireAimedShot();
+			}
+			else
+				FireRandomShot();
 		}
 	}
 }
 
 void UFO::FireAimedShot(void)
 {
-	if (p_Player->m_Active && !p_Player->m_Hit)
+	if (m_PodActive)
+		FireShotAt(atan2(m_PodLocation.y - m_Position.y, m_PodLocation.x - m_Position.x));
+	else if (p_Player->m_Active && !p_Player->m_Hit)
+	{
 		FireShotAt(atan2(p_Player->m_Position.y - m_Position.y + Random::Number(0, 0.5) - Random::Number(0, 0.5),
 			p_Player->m_Position.x - m_Position.x + Random::Number(0, 0.5) - Random::Number(0, 0.5)));
-	else if (m_PodActive)
-		FireShotAt(atan2(m_PodLocation.y - m_Position.y, m_PodLocation.x - m_Position.x));
+	}
+	else
+		FireRandomShot();
 
 }
 

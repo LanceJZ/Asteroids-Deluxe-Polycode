@@ -27,8 +27,6 @@ public:
 	bool m_Done;
 	int m_Points;
 	int m_Size;
-	int m_NumberOfShots;
-	int m_NumberOfShotsAtRocks;
 
 private:
 	std::shared_ptr<CollisionScene> p_Scene;
@@ -44,6 +42,8 @@ private:
 	bool m_ShieldHit;
 	bool m_ShotHitShield;
 	bool m_PodActive;
+	int m_NumberOfShots;
+	int m_NumberOfShotsAtRocks;
 	float m_FireTimerAmount;
 	float m_VectorTimerAmount;
 	float m_Speed;

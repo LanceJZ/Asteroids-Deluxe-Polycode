@@ -63,7 +63,8 @@ void RockControl::Update(Number *elapsed)
 		Number pitch = 1;
 		pitch = clampf(sqrtf((clampf(m_NumberOfRocksHit - m_Wave * 9, 0, 162)) * 0.15), 1, 4);
 
-		p_BackgroundSound->setPitch(pitch);
+		if (p_BackgroundSound != NULL)
+			p_BackgroundSound->setPitch(pitch);
 	}
 	
 	if (rocksCounted.numberActive < 1)
@@ -97,7 +98,9 @@ void RockControl::Update(Number *elapsed)
 	{
 		if (p_Player->m_GameOver)
 		{
-			p_BackgroundSound->Stop();
+			if (p_BackgroundSound != NULL)
+				p_BackgroundSound->Stop();
+
 			m_SoundOn = false;
 		}
 	}
@@ -105,12 +108,15 @@ void RockControl::Update(Number *elapsed)
 
 void RockControl::Pause(bool paused)
 {
-	if (!p_Player->m_GameOver)
+	if (p_BackgroundSound != NULL)
 	{
-		if (paused)
-			p_BackgroundSound->Stop();
-		else
-			p_BackgroundSound->Play();
+		if (!p_Player->m_GameOver)
+		{
+			if (paused)
+				p_BackgroundSound->Stop();
+			else
+				p_BackgroundSound->Play(true);
+		}
 	}
 }
 

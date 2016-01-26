@@ -45,7 +45,7 @@ HUD::HUD(void)
 	m_GameText[6] = "P KEY TO PAUSE GAME";
 	m_GameText[7] = "ARROW KEYS TO CONTROL SHIP UP FOR THRUST";
 	m_GameText[8] = "LEFT CTRL KEY OR SPACE TO FIRE";
-	m_GameText[9] = "LEFT SHIFT KEY OR LEFT ALT KEY FOR SHIELD";
+	m_GameText[9] = "DOWN ARROW KEY OR S KEY FOR SHIELD";
 	m_GameText[10] = "WATCH OUT FOR THE DEATH STAR";
 
 	m_GameOver = true;

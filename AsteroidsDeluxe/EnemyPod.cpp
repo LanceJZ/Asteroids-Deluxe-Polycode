@@ -62,7 +62,7 @@ void EnemyPod::Spawn()
 		p_Pairs[pair]->Enable();
 	}
 
-	float rad = Random::Number(0.075, (PI * 2) - 0.75);
+	float rad = Random::Number(0.75, (PI * 2) - 0.75);
 	float speed = 3;
 
 	m_Velocity = Vector3(cos(rad) * speed, sin(rad) * speed, 0);
